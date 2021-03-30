@@ -1,0 +1,16 @@
+[Unit]
+Description= Go-OPS Service.
+ConditionFileIsExecutable=/data/go-ops/output/kjcloud 
+
+[Service]
+StartLimitInterval=5
+StartLimitBurst=10
+ExecStart=/data/go-ops/output/go-ops  --config=/data/go-ops/config/server.toml
+StandardOutput=file:/data/go-ops/log/tapi.log
+
+Restart=always
+RestartSec=120
+EnvironmentFile=-/etc/sysconfig/TPApi
+
+[Install]
+WantedBy=multi-user.target
