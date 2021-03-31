@@ -73,6 +73,18 @@ func InstanceDetailView(c *gin.Context) {
 
 }
 
-func ListRegionlView(c *gin.Context) {
-
+func ListRegionView(c *gin.Context) {
+	var s service.InstanceDetailSerializer
+	if err := c.ShouldBind(&s); err != nil {
+		tools.JSONFailed(c, tools.MSG_ERR, err.Error())
+		return
+	}
+	//tools.PrettyPrint(s)
+	response, err := s.ListRegions()
+	if err != nil {
+		tools.JSONFailed(c, tools.MSG_ERR, err.Error())
+		return
+	}
+	// 返回
+	tools.JSONOk(c, response)
 }

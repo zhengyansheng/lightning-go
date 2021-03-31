@@ -65,3 +65,12 @@ func (s InstanceDetailSerializer) ListInstances() ([]map[string]interface{}, err
 	}
 	return clt.ListInstances()
 }
+
+func (s InstanceDetailSerializer) ListRegions() ([]map[string]string, error) {
+	var resources []map[string]string
+	clt, err := multi_cloud_sdk.NewFactoryByAccount(s.Account, s.RegionId)
+	if err != nil {
+		return resources, err
+	}
+	return clt.ListRegions()
+}

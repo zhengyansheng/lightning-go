@@ -79,7 +79,7 @@ func InitRouters(server *xgin.Server) {
 	}
 	region := server.Group("/api/v1/multi-cloud/regions")
 	{
-		region.GET("/", multi_cloud.ListRegionlView)
+		region.GET("/", multi_cloud.ListRegionView)
 	}
 	account := server.Group("/api/v1/multi-cloud/account")
 	{
