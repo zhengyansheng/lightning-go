@@ -8,6 +8,7 @@ type client interface {
 	CreateInstance(PayType, hostname, instanceType, zoneId, imageId, vpcId, subnetId string, securityGroupIds []string, dryRun bool) (string, error)
 	StartInstance(string) (string, error)
 	StopInstance(string) (string, error)
+	RebootInstance(string, bool) (string, error)
 	ListInstances() ([]map[string]interface{}, error)
 	ListInstance(string) (map[string]interface{}, error)
 	ListRegions() ([]map[string]string, error)

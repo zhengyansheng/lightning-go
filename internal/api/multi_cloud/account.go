@@ -34,7 +34,6 @@ func ListAccountView(c *gin.Context) {
 
 func DeleteAccountView(c *gin.Context) {
 	var s multi_cloud.Account
-
 	pk := c.Param("id")
 	pkUint, _ := tools.StringToUint(pk)
 	s.ID = pkUint

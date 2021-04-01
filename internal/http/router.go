@@ -7,7 +7,6 @@ import (
 	_ "go-ops/docs"
 	"go-ops/internal/api/message"
 	"go-ops/internal/api/multi_cloud"
-	"go-ops/internal/api/onduty"
 	"go-ops/internal/api/scheduler"
 	"go-ops/internal/http/middleware"
 )
@@ -45,14 +44,6 @@ func InitRouters(server *xgin.Server) {
 	url := ginSwagger.URL("http://127.0.0.1:9900/swagger/doc.json")
 	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 
-	// set message center router
-	duty := server.Group("/api/v1/on-duty")
-	{
-		duty.POST("", onduty.CreateOnDuty)
-		duty.PUT("/:id", onduty.UpdateOnDuty)
-		duty.DELETE("/:id", onduty.DeleteOnDuty)
-	}
-
 	// task scheduler
 	ts := server.Group("/api/v1/task-scheduler/dag")
 	{
@@ -73,7 +64,7 @@ func InitRouters(server *xgin.Server) {
 		instance.POST("/create", multi_cloud.CreateInstanceView)
 		instance.POST("/start", multi_cloud.StartInstanceView)
 		instance.POST("/stop", multi_cloud.StopInstanceView)
-		instance.POST("/reboot", multi_cloud.StopInstanceView)
+		instance.POST("/reboot", multi_cloud.RebootInstanceView)
 		instance.GET("/", multi_cloud.ListInstancesView)
 		instance.GET("/:id", multi_cloud.InstanceDetailView)
 	}

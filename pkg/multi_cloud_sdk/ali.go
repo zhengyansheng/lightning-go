@@ -2,10 +2,12 @@ package multi_cloud_sdk
 
 import (
 	"errors"
+	"fmt"
+	"strings"
+
 	openapi "github.com/alibabacloud-go/darabonba-openapi/client"
 	ecs "github.com/alibabacloud-go/ecs-20140526/v2/client"
 	"github.com/alibabacloud-go/tea/tea"
-	"strings"
 )
 
 type aliyunClient struct {
@@ -78,7 +80,7 @@ func (ali *aliyunClient) StartInstance(instanceId string) (string, error) {
 	}
 	for _, v := range response.Body.InstanceResponses.InstanceResponse {
 		if *v.Message == "success" && *v.Code == "200" {
-			return "", nil
+			return *response.Body.RequestId, nil
 		}
 	}
 	return "", errors.New("Start fail. ")
@@ -95,12 +97,26 @@ func (ali *aliyunClient) StopInstance(instanceId string) (string, error) {
 	if err != nil {
 		return err.Error(), err
 	}
+
 	for _, v := range response.Body.InstanceResponses.InstanceResponse {
 		if *v.Message == "success" && *v.Code == "200" {
-			return "", nil
+			return *response.Body.RequestId, nil
 		}
 	}
 	return "", errors.New("Stop fail. ")
+}
+
+func (ali *aliyunClient) RebootInstance(instanceId string, forceStop bool) (string, error) {
+	rebootInstanceRequest := &ecs.RebootInstanceRequest{
+		InstanceId: tea.String(instanceId),
+		ForceStop:  tea.Bool(forceStop),
+	}
+	response, err := ali.ecsClt.RebootInstance(rebootInstanceRequest)
+	if err != nil {
+		return err.Error(), err
+	}
+	requestId := response.Body.RequestId
+	return fmt.Sprintf("requestId: %s", *requestId), nil
 }
 
 func (ali *aliyunClient) ListInstance(instanceId string) (map[string]interface{}, error) {
@@ -140,7 +156,7 @@ func (ali *aliyunClient) ListInstances() ([]map[string]interface{}, error) {
 func (ali *aliyunClient) processInstance(instance *ecs.DescribeInstancesResponseBodyInstancesInstance) (map[string]interface{}, error) {
 	info := make(map[string]interface{})
 	info = map[string]interface{}{
-		"type":                cloudType,
+		"type":                 cloudType,
 		"platform":             "ali",
 		"instance_charge_type": instance.InstanceChargeType,
 		"instance_id":          instance.InstanceId,
@@ -172,7 +188,7 @@ func (ali *aliyunClient) ListRegions() ([]map[string]string, error) {
 	var regions []map[string]string
 	describeRegionsRequest := &ecs.DescribeRegionsRequest{
 		AcceptLanguage: tea.String("zh-CN"),
-		ResourceType: tea.String("instance"),
+		ResourceType:   tea.String("instance"),
 	}
 	// 复制代码运行请自行打印 API 的返回值
 	regionInfo, err := ali.ecsClt.DescribeRegions(describeRegionsRequest)
@@ -181,12 +197,10 @@ func (ali *aliyunClient) ListRegions() ([]map[string]string, error) {
 	}
 	for _, reg := range regionInfo.Body.Regions.Region {
 		info := map[string]string{
-			"region_id": *reg.RegionId,
+			"region_id":  *reg.RegionId,
 			"local_name": *reg.LocalName,
 		}
 		regions = append(regions, info)
 	}
 	return regions, nil
 }
-
-
