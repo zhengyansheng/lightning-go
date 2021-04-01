@@ -151,7 +151,29 @@ func ListInstancesView(c *gin.Context) {
 }
 
 func InstanceDetailView(c *gin.Context) {
-
+	// Validate field
+	s := struct {
+		Account      string `form:"account" binding:"required"`
+		RegionId     string `form:"region_id" binding:"required"`
+	}{}
+	if err := c.ShouldBind(&s); err != nil {
+		tools.JSONFailed(c, tools.MSG_ERR, err.Error())
+		return
+	}
+	// Factory StopInstance
+	tools.PrettyPrint(s)
+	clt, err := multi_cloud_sdk.NewFactoryByAccount(s.Account, s.RegionId)
+	if err != nil {
+		tools.JSONFailed(c, tools.MSG_ERR, err.Error())
+		return
+	}
+	response, err := clt.ListInstance(c.Param("instance_id"))
+	if err != nil {
+		tools.JSONFailed(c, tools.MSG_ERR, fmt.Sprintf("ListInstance %v", err.Error()))
+		return
+	}
+	// Response
+	tools.JSONOk(c, response)
 }
 
 func ListRegionView(c *gin.Context) {
@@ -174,6 +196,62 @@ func ListRegionView(c *gin.Context) {
 	response, err := clt.ListRegions()
 	if err != nil {
 		tools.JSONFailed(c, tools.MSG_ERR, fmt.Sprintf("ListRegion %v", err.Error()))
+		return
+	}
+	// Response
+	tools.JSONOk(c, response)
+}
+
+func DestroyInstanceView(c *gin.Context) {
+	// Validate field
+	s := struct {
+		Account    string `json:"account" binding:"required"`
+		RegionId   string `json:"region_id" binding:"required"`
+		InstanceId string `json:"instance_id" binding:"required"`
+		ForceStop  bool   `json:"force_stop"`
+	}{}
+	if err := c.ShouldBindJSON(&s); err != nil {
+		tools.JSONFailed(c, tools.MSG_ERR, err.Error())
+		return
+	}
+	// Factory StopInstance
+	tools.PrettyPrint(s)
+	clt, err := multi_cloud_sdk.NewFactoryByAccount(s.Account, s.RegionId)
+	if err != nil {
+		tools.JSONFailed(c, tools.MSG_ERR, err.Error())
+		return
+	}
+	response, err := clt.DestroyInstance(s.InstanceId, s.ForceStop)
+	if err != nil {
+		tools.JSONFailed(c, tools.MSG_ERR, fmt.Sprintf("DestroyInstance %v", err.Error()))
+		return
+	}
+	// Response
+	tools.JSONOk(c, response)
+}
+
+func ModifyInstanceNameView(c *gin.Context) {
+	// Validate field
+	s := struct {
+		Account      string `json:"account" binding:"required"`
+		RegionId     string `json:"region_id" binding:"required"`
+		InstanceId   string `json:"instance_id" binding:"required"`
+		InstanceName string `json:"instance_name" binding:"required"`
+	}{}
+	if err := c.ShouldBindJSON(&s); err != nil {
+		tools.JSONFailed(c, tools.MSG_ERR, err.Error())
+		return
+	}
+	// Factory StopInstance
+	tools.PrettyPrint(s)
+	clt, err := multi_cloud_sdk.NewFactoryByAccount(s.Account, s.RegionId)
+	if err != nil {
+		tools.JSONFailed(c, tools.MSG_ERR, err.Error())
+		return
+	}
+	response, err := clt.ModifyInstanceName(s.InstanceId, s.InstanceName)
+	if err != nil {
+		tools.JSONFailed(c, tools.MSG_ERR, fmt.Sprintf("ModifyInstanceName %v", err.Error()))
 		return
 	}
 	// Response

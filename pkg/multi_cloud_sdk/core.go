@@ -9,10 +9,11 @@ type client interface {
 	StartInstance(string) (string, error)
 	StopInstance(string) (string, error)
 	RebootInstance(string, bool) (string, error)
+	DestroyInstance(string, bool) (string, error)
+	ModifyInstanceName(string, string) (string, error)
 	ListInstances() ([]map[string]interface{}, error)
 	ListInstance(string) (map[string]interface{}, error)
 	ListRegions() ([]map[string]string, error)
-
 }
 
 func NewFactory(cloudPlatform, accessKeyId, secretKeyId, regionId string) (clt client, err error) {

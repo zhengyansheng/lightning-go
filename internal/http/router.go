@@ -65,6 +65,8 @@ func InitRouters(server *xgin.Server) {
 		instance.POST("/start", multi_cloud.StartInstanceView)
 		instance.POST("/stop", multi_cloud.StopInstanceView)
 		instance.POST("/reboot", multi_cloud.RebootInstanceView)
+		instance.POST("/destroy", multi_cloud.DestroyInstanceView)
+		instance.POST("/modify_instance_name", multi_cloud.ModifyInstanceNameView)
 		instance.GET("/", multi_cloud.ListInstancesView)
 		instance.GET("/:id", multi_cloud.InstanceDetailView)
 	}

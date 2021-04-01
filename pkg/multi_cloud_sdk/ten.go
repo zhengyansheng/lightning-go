@@ -123,6 +123,14 @@ func (ten *tencentcloudClient) RebootInstance(instanceId string, forceStop bool)
 	return "", nil
 }
 
+func (ten *tencentcloudClient) DestroyInstance(instanceId string, forceStop bool) (string, error) {
+	return "", nil
+}
+
+func (ten *tencentcloudClient) ModifyInstanceName(instanceId string, instanceName string) (string, error) {
+	return "", nil
+}
+
 func (ten *tencentcloudClient) ListInstance(instanceId string) (map[string]interface{}, error) {
 	return nil, nil
 }

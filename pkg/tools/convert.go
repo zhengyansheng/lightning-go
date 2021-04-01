@@ -3,6 +3,7 @@ package tools
 import (
 	"encoding/json"
 	"strconv"
+	"strings"
 
 	"github.com/fatih/structs"
 )
@@ -33,4 +34,10 @@ func ByteToJson(b []byte) (data map[string]interface{}, err error) {
 func JsonToByte(data map[string]interface{}) (b []byte, err error) {
 	b, err = json.Marshal(data)
 	return
+}
+
+func ReplaceDateTime(dTime string) string {
+	// "2020-11-02T15:38Z"
+	s := strings.Replace(dTime, "T", " ", -1)
+	return strings.Replace(s, "Z", " ", -1)
 }

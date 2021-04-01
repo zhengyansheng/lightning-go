@@ -3,6 +3,7 @@ package multi_cloud_sdk
 import (
 	"errors"
 	"fmt"
+	"go-ops/pkg/tools"
 	"strings"
 
 	openapi "github.com/alibabacloud-go/darabonba-openapi/client"
@@ -107,6 +108,7 @@ func (ali *aliyunClient) StopInstance(instanceId string) (string, error) {
 }
 
 func (ali *aliyunClient) RebootInstance(instanceId string, forceStop bool) (string, error) {
+	// 如果机器状态是关机，则无法重启；必须先开机 在关机才行
 	rebootInstanceRequest := &ecs.RebootInstanceRequest{
 		InstanceId: tea.String(instanceId),
 		ForceStop:  tea.Bool(forceStop),
@@ -119,8 +121,52 @@ func (ali *aliyunClient) RebootInstance(instanceId string, forceStop bool) (stri
 	return fmt.Sprintf("requestId: %s", *requestId), nil
 }
 
+func (ali *aliyunClient) DestroyInstance(instanceId string, forceStop bool) (string, error) {
+	deleteInstanceRequest := &ecs.DeleteInstanceRequest{
+		InstanceId:            tea.String(instanceId),
+		Force:                 tea.Bool(forceStop),
+		TerminateSubscription: tea.Bool(true), // 是否强制释放运行中（Running的实例
+	}
+	response, err := ali.ecsClt.DeleteInstance(deleteInstanceRequest)
+	if err != nil {
+		return err.Error(), err
+	}
+	return *response.Body.RequestId, nil
+}
+
+func (ali *aliyunClient) ModifyInstanceName(instanceId string, instanceName string) (string, error) {
+	modifyInstanceAttributeRequest := &ecs.ModifyInstanceAttributeRequest{
+		InstanceId:   tea.String(instanceId),
+		HostName:     tea.String(instanceName),
+		InstanceName: tea.String(instanceName),
+	}
+	response, err := ali.ecsClt.ModifyInstanceAttribute(modifyInstanceAttributeRequest)
+	if err != nil {
+		return err.Error(), err
+	}
+	return *response.Body.RequestId, nil
+}
+
 func (ali *aliyunClient) ListInstance(instanceId string) (map[string]interface{}, error) {
-	return nil, nil
+	var instanceInfo = make(map[string]interface{})
+	describeInstancesRequest := &ecs.DescribeInstancesRequest{
+		PageSize:    tea.Int32(100),
+		InstanceIds: tea.String(instanceId),
+		RegionId:    tea.String(ali.regionId),
+		DryRun:      tea.Bool(false),
+	}
+	instances, err := ali.ecsClt.DescribeInstances(describeInstancesRequest)
+	if err != nil {
+		return instanceInfo, err
+	}
+	if len(instances.Body.Instances.Instance) == 0 {
+		return instanceInfo, errors.New(fmt.Sprintf("%s not found ", instanceId))
+	}
+	for _, instance := range instances.Body.Instances.Instance {
+		instanceInfo, _ = ali.processInstance(instance)
+
+	}
+	return instanceInfo, nil
 }
 
 func (ali *aliyunClient) ListInstances() ([]map[string]interface{}, error) {
@@ -141,9 +187,6 @@ func (ali *aliyunClient) ListInstances() ([]map[string]interface{}, error) {
 		if len(instances.Body.Instances.Instance) == 0 {
 			break
 		}
-		//fmt.Println(instances.Body.Instances.Instance)
-		//fmt.Println("->", *instances.Body.TotalCount)
-		//fmt.Println("->", len(instances.Body.Instances.Instance))
 		for _, instance := range instances.Body.Instances.Instance {
 			info, _ := ali.processInstance(instance)
 			instanceArray = append(instanceArray, info)
@@ -154,14 +197,27 @@ func (ali *aliyunClient) ListInstances() ([]map[string]interface{}, error) {
 }
 
 func (ali *aliyunClient) processInstance(instance *ecs.DescribeInstancesResponseBodyInstancesInstance) (map[string]interface{}, error) {
+	defer func() {
+		if err := recover(); err != nil {
+			fmt.Printf("recover %s\n", err)
+		}
+	}()
+
+	tools.PrettyPrint(instance)
+
+	var publicIpAddress *string
 	info := make(map[string]interface{})
+
+	if len(instance.PublicIpAddress.IpAddress) != 0 {
+		publicIpAddress = instance.PublicIpAddress.IpAddress[0]
+	}
 	info = map[string]interface{}{
 		"type":                 cloudType,
 		"platform":             "ali",
 		"instance_charge_type": instance.InstanceChargeType,
 		"instance_id":          instance.InstanceId,
 		"private_ip":           instance.VpcAttributes.PrivateIpAddress.IpAddress[0],
-		"public_ip":            instance.PublicIpAddress.IpAddress[0],
+		"public_ip":            publicIpAddress,
 		"eip_ip":               instance.EipAddress.IpAddress,
 		"instance_name":        instance.InstanceName,
 		"hostname":             instance.HostName,
@@ -177,9 +233,9 @@ func (ali *aliyunClient) processInstance(instance *ecs.DescribeInstancesResponse
 		"state":                strings.ToLower(*instance.Status),
 		"mem_total":            *instance.Memory / 1024,
 		"cpu_total":            instance.Cpu,
-		"start_time":           instance.StartTime,
-		"create_time":          instance.CreationTime,
-		"expired_time":         instance.ExpiredTime,
+		"start_time":           tools.ReplaceDateTime(*instance.StartTime),
+		"create_time":          tools.ReplaceDateTime(*instance.CreationTime),
+		"expired_time":         tools.ReplaceDateTime(*instance.ExpiredTime),
 	}
 	return info, nil
 }
