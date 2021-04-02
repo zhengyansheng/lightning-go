@@ -42,7 +42,7 @@ func (eng *Engine) printBanner() error {
 / /_/ // /_/ // /_/ // ____/___/ / 
 \____/ \____/ \____//_/    /____/  
 
- Welcome to GO-OPS  APi, starting application ...
+ Welcome to LIGHTNING-OPS  API, starting application ...
 `
 
 	fmt.Println(xcolor.Green(banner))

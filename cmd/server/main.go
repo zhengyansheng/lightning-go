@@ -6,12 +6,12 @@ import (
 	"go-ops/internal/app"
 )
 
-// @title go-ops api
+// @title lightning-go api
 // @version 1.0
-// @description go-ops api
-// @termsOfService https://github.com/51Reboot/go-ops
+// @description lightning-go api
+// @termsOfService https://github.com/zhengyansheng/lightning-go
 // @license.name MIT
-// @license.url https://github.com/51Reboot/go-ops
+// @license.url https://github.com/zhengyansheng/lightning-go
 
 func main() {
 

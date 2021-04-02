@@ -22,14 +22,11 @@ type InstallAPP struct {
 }
 
 func main() {
-	fmt.Println(1)
 	eng := &InstallAPP{}
 	_ = eng.Startup(
 		eng.initApp,
 	)
-	fmt.Println(2)
 	initDB()
-	fmt.Println(3)
 	db.Init()
 
 }

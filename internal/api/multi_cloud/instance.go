@@ -27,7 +27,7 @@ func CreateInstanceView(c *gin.Context) {
 		tools.JSONFailed(c, tools.MSG_ERR, err.Error())
 		return
 	}
-	// Factory StopInstance
+	// Factory CreateInstance
 	tools.PrettyPrint(s)
 	clt, err := multi_cloud_sdk.NewFactoryByAccount(s.Account, s.RegionId)
 	if err != nil {
@@ -54,7 +54,7 @@ func StartInstanceView(c *gin.Context) {
 		tools.JSONFailed(c, tools.MSG_ERR, err.Error())
 		return
 	}
-	// Factory StopInstance
+	// Factory StartInstance
 	tools.PrettyPrint(s)
 	clt, err := multi_cloud_sdk.NewFactoryByAccount(s.Account, s.RegionId)
 	if err != nil {
@@ -134,7 +134,7 @@ func ListInstancesView(c *gin.Context) {
 		tools.JSONFailed(c, tools.MSG_ERR, err.Error())
 		return
 	}
-	// Factory StopInstance
+	// Factory ListInstances
 	tools.PrettyPrint(s)
 	clt, err := multi_cloud_sdk.NewFactoryByAccount(s.Account, s.RegionId)
 	if err != nil {
@@ -160,7 +160,7 @@ func InstanceDetailView(c *gin.Context) {
 		tools.JSONFailed(c, tools.MSG_ERR, err.Error())
 		return
 	}
-	// Factory StopInstance
+	// Factory ListInstance
 	tools.PrettyPrint(s)
 	clt, err := multi_cloud_sdk.NewFactoryByAccount(s.Account, s.RegionId)
 	if err != nil {
@@ -186,7 +186,7 @@ func ListRegionView(c *gin.Context) {
 		tools.JSONFailed(c, tools.MSG_ERR, err.Error())
 		return
 	}
-	// Factory StopInstance
+	// Factory ListRegions
 	tools.PrettyPrint(s)
 	clt, err := multi_cloud_sdk.NewFactoryByAccount(s.Account, s.RegionId)
 	if err != nil {
@@ -214,7 +214,7 @@ func DestroyInstanceView(c *gin.Context) {
 		tools.JSONFailed(c, tools.MSG_ERR, err.Error())
 		return
 	}
-	// Factory StopInstance
+	// Factory DestroyInstance
 	tools.PrettyPrint(s)
 	clt, err := multi_cloud_sdk.NewFactoryByAccount(s.Account, s.RegionId)
 	if err != nil {
@@ -242,7 +242,7 @@ func ModifyInstanceNameView(c *gin.Context) {
 		tools.JSONFailed(c, tools.MSG_ERR, err.Error())
 		return
 	}
-	// Factory StopInstance
+	// Factory ModifyInstanceName
 	tools.PrettyPrint(s)
 	clt, err := multi_cloud_sdk.NewFactoryByAccount(s.Account, s.RegionId)
 	if err != nil {
