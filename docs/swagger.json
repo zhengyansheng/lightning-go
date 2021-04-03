@@ -1,0 +1,15 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "lightning-go api",
+        "title": "lightning-go api",
+        "termsOfService": "https://github.com/zhengyansheng/lightning-go",
+        "contact": {},
+        "license": {
+            "name": "MIT",
+            "url": "https://github.com/zhengyansheng/lightning-go"
+        },
+        "version": "1.0"
+    },
+    "paths": {}
+}

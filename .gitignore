@@ -301,7 +301,6 @@ celerybeat.pid
 ./tools/*
 ./tests/*
 data/*
-docs/*
 tests/*
 .idea/workspace.xml
 bin/*

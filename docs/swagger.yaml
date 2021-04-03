@@ -1,0 +1,11 @@
+info:
+  contact: {}
+  description: lightning-go api
+  license:
+    name: MIT
+    url: https://github.com/zhengyansheng/lightning-go
+  termsOfService: https://github.com/zhengyansheng/lightning-go
+  title: lightning-go api
+  version: "1.0"
+paths: {}
+swagger: "2.0"
