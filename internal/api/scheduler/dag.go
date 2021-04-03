@@ -1,6 +1,8 @@
 package scheduler
 
 import (
+	"fmt"
+	"go-ops/internal/models/scheduler"
 	"go-ops/internal/service/scheduler"
 	"go-ops/pkg/tools"
 	"strings"
@@ -8,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// 触发Dag
 func TriggerDagRun(c *gin.Context) {
 	var dagRun service.DagRunDataSerializer
 	if err := c.ShouldBindJSON(&dagRun); err != nil {
@@ -23,55 +26,46 @@ func TriggerDagRun(c *gin.Context) {
 	tools.JSONOk(c, msg)
 }
 
+// 查询Dag
+// /api/v1/task-scheduler/dag
+// /api/v1/task-scheduler/dag?dag_id=delivery_machine&execution_date=2021-04-02 20:12:09.063224
 func ListDagRun(c *gin.Context) {
 	var (
-		err     error
-		dag     service.DagMgt
-		dagData interface{}
+		dagRun       scheduler.DagRun
+		taskInstance scheduler.TaskInstance
 	)
-	dagName, ok := c.GetQuery("dag_name")
-	if ok {
-		dag.DagName = dagName
-		dagData, err = dag.DetailDag()
+	// replace
+	// https://blog.csdn.net/Yvken_Zh/article/details/104861765
+	c.Request.URL.RawQuery = strings.ReplaceAll(c.Request.URL.RawQuery, "+", "%2b")
+
+	// Get params
+	dagId := c.Query("dag_id")
+	executionDate := c.Query("execution_date")
+	fmt.Printf("dagId: %v, executionDate: %v\n", dagId, executionDate)
+	if dagId != "" && executionDate != "" {
+		// execute sql
+		taskInstance.DagId = dagId
+		taskInstance.ExecutionDate = executionDate
+		dagRuns, err := taskInstance.ListByDagAndExecDate()
+		if err != nil {
+			tools.JSONFailed(c, tools.MSG_ERR, err.Error())
+			return
+		}
+		// Response
+		tools.JSONOk(c, dagRuns)
 	} else {
-		dagData, err = dag.ListDag()
+		// execute sql
+		dagRuns, err := dagRun.List()
+		if err != nil {
+			tools.JSONFailed(c, tools.MSG_ERR, err.Error())
+			return
+		}
+		// Response
+		tools.JSONOk(c, dagRuns)
 	}
-	if err != nil {
-		tools.JSONFailed(c, tools.MSG_ERR, err.Error())
-		return
-	}
-	tools.JSONOk(c, dagData)
+	return
 }
 
-func TaskInstance(c *gin.Context) {
-	// ?dag_name=xxx&dag_run_id=xxx
-	// https://blog.csdn.net/Yvken_Zh/article/details/104861765
-	var (
-		ok       bool
-		dagName  string
-		dagRunId string
-		dag      service.DagMgt
-	)
-	c.Request.URL.RawQuery = strings.ReplaceAll(c.Request.URL.RawQuery, "+", "%2b")
-	dagName, ok = c.GetQuery("dag_name")
-	if !ok {
-		tools.JSONFailed(c, tools.MSG_ERR, "dag_name is required")
-		return
-	}
-
-	dagRunId, ok = c.GetQuery("dag_run_id")
-
-	if !ok {
-		tools.JSONFailed(c, tools.MSG_ERR, "dag_run_id is required")
-		return
-	}
-	dag.DagName = dagName
-	dag.DagRunId = dagRunId
-	tasks, err := dag.TaskInstance()
-	if err != nil {
-		tools.JSONFailed(c, tools.MSG_ERR, err.Error())
-		return
-	}
-	tools.JSONOk(c, tasks)
+func ListTaskLog(c *gin.Context) {
 
 }

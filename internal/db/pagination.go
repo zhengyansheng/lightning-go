@@ -1,26 +1,6 @@
 package db
 
-import (
-	"github.com/douyu/jupiter/pkg/store/gorm"
-)
-
-var DB *gorm.DB
-
-func Init() {
-
-	DB = gorm.StdConfig("master").Build()
-
-}
-
-func InitTest() {
-
-	config := gorm.DefaultConfig()
-	config.DSN = "root:123456@tcp(127.0.0.1:3306)/idrac?charset=utf8&parseTime=True&loc=Local&readTimeout=1s&timeout=1s&writeTimeout=3s"
-	config.Debug = true
-
-	DB = config.Build()
-	defer DB.Close()
-}
+import "github.com/douyu/jupiter/pkg/store/gorm"
 
 // 单表分页
 type PaginationQ struct {

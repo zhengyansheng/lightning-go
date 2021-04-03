@@ -8,9 +8,8 @@ import (
 	"github.com/douyu/jupiter/pkg/util/xgo"
 	"github.com/douyu/jupiter/pkg/worker/xcron"
 	"github.com/douyu/jupiter/pkg/xlog"
-	"go-ops/internal/api/message"
 	"go-ops/internal/db"
-	"go-ops/internal/http"
+	"go-ops/internal/router"
 )
 
 type Engine struct {
@@ -53,7 +52,6 @@ func (eng *Engine) initApp() error {
 	db.Init()
 	eng.initCron()
 	eng.printBanner()
-	go message.GobalSend.ConsumerMsg()
 	//redis.InitRedis()
 	return nil
 }
@@ -67,6 +65,6 @@ func (eng *Engine) initCron() error {
 //http服务
 func (eng *Engine) serveHTTP() error {
 	server := xgin.StdConfig("http").Build()
-	http.InitRouters(server)
+	router.InitRouters(server)
 	return eng.Serve(server)
 }

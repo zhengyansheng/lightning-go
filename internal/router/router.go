@@ -1,14 +1,13 @@
-package http
+package router
 
 import (
 	"github.com/douyu/jupiter/pkg/server/xgin"
 	"github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 	_ "go-ops/docs"
-	"go-ops/internal/api/message"
 	"go-ops/internal/api/multi_cloud"
 	"go-ops/internal/api/scheduler"
-	"go-ops/internal/http/middleware"
+	"go-ops/internal/router/middleware"
 )
 
 func InitRouters(server *xgin.Server) {
@@ -26,20 +25,6 @@ func InitRouters(server *xgin.Server) {
 	// set JWTauth middleware
 	//send.Use(middleware.JWTAuth())
 
-	{
-		send.POST("/ding/add", message.AddDing)
-		send.DELETE("/ding/delete", message.DelDing)
-		send.PUT("/ding/update", message.UpdateDing)
-		send.GET("/ding/query", message.QueryDing)
-		send.POST("/ding/send", message.GobalSend.SendDing)
-
-		send.POST("/mail/add", message.AddMail)
-		send.DELETE("/mail/delete", message.DelMail)
-		send.PUT("/mail/update", message.UpdateMail)
-		send.GET("/mail/query", message.QueryMail)
-		send.POST("/mail/send", message.GobalSend.SendDing)
-	}
-
 	// api swagger doc
 	url := ginSwagger.URL("http://127.0.0.1:9900/swagger/doc.json")
 	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
@@ -49,7 +34,6 @@ func InitRouters(server *xgin.Server) {
 	{
 		ts.POST("/", scheduler.TriggerDagRun)
 		ts.GET("/", scheduler.ListDagRun)
-		ts.GET("/tasks", scheduler.TaskInstance)
 	}
 
 	// multi-cloud router
@@ -60,6 +44,7 @@ func InitRouters(server *xgin.Server) {
 		template.DELETE("/:id", multi_cloud.DeleteTemplateView)
 	}
 	instance := server.Group("/api/v1/multi-cloud/instance")
+	instance.Use(middleware.LifeCycle()) // 记录生命周期事件
 	{
 		instance.POST("/create", multi_cloud.CreateInstanceView)
 		instance.POST("/start", multi_cloud.StartInstanceView)
