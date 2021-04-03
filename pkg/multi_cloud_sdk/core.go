@@ -1,6 +1,8 @@
 package multi_cloud_sdk
 
 import (
+	"errors"
+	"fmt"
 	"lightning-go/internal/models/multi_cloud"
 )
 
@@ -34,7 +36,7 @@ func NewFactoryByAccount(account, regionId string) (clt client, err error) {
 	)
 	accessKeyInfo, err := mc.GetByAccount()
 	if err != nil {
-		return nil, err
+		return nil, errors.New(fmt.Sprintf("account: %s not found. ", account))
 	}
 	switch accessKeyInfo.Platform {
 	case "ali":

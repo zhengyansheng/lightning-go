@@ -13,9 +13,8 @@ import (
 
 // 验证结构体
 type DagRunDataSerializer struct {
-	DagName    string                 `json:"dag_name" binding:"required"`
-	Data       map[string]interface{} `json:"data" binding:"required"`
-	CreateUser string                 `json:"create_user" binding:"required"`
+	DagName string                 `json:"dag_name"`
+	Data    map[string]interface{} `json:"data" binding:"required"`
 }
 
 type DagRunResponse struct {
@@ -136,6 +135,7 @@ func (s DagRunDataSerializer) Trigger() (interface{}, error) {
 
 	body["conf"] = s.Data
 	tools.PrettyPrint(body)
+	tools.PrettyPrint(dagUrl)
 	bodyByte, err := tools.JsonToByte(body)
 	if err != nil {
 		return "JsonToByte error", err

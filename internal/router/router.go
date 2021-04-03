@@ -33,7 +33,7 @@ func InitRouters(server *xgin.Server) {
 	// task scheduler
 	ts := server.Group("/api/v1/task-scheduler/dag")
 	{
-		ts.POST("/", scheduler.TriggerDagRun)
+		ts.POST("/:dagName", scheduler.TriggerDagRun)
 		ts.GET("/", scheduler.ListDagRun)
 	}
 

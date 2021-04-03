@@ -13,11 +13,13 @@ import (
 
 // 触发Dag
 func TriggerDagRun(c *gin.Context) {
+	// Validate
 	var dagRun service.DagRunDataSerializer
 	if err := c.ShouldBindJSON(&dagRun); err != nil {
 		tools.JSONFailed(c, tools.MSG_ERR, err.Error())
 		return
 	}
+	dagRun.DagName = c.Param("dagName") // /:id
 	tools.PrettyPrint(dagRun)
 	msg, err := dagRun.Trigger()
 	if err != nil {
@@ -40,7 +42,7 @@ func ListDagRun(c *gin.Context) {
 	c.Request.URL.RawQuery = strings.ReplaceAll(c.Request.URL.RawQuery, "+", "%2b")
 
 	// Get params
-	dagId := c.Query("dag_id")
+	dagId := c.Query("dag_id") // ?dag_id=xxx
 	executionDate := c.Query("execution_date")
 	fmt.Printf("dagId: %v, executionDate: %v\n", dagId, executionDate)
 	if dagId != "" && executionDate != "" {
