@@ -3,18 +3,10 @@ package multi_cloud
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"go-ops/internal/models/multi_cloud"
-	"go-ops/pkg/tools"
+	"lightning-go/internal/models/multi_cloud"
+	"lightning-go/pkg/tools"
 )
 
-// @Summary 创建
-// @Description 创建多云模版
-// @Accept  application/json
-// @Produce application/json
-// @Param   data   body multi_cloud_template.CloudTemplate  true   "Body数据格式"
-// @Success 200 {string}  {"code": 0, "data": "", "message": ""}
-// @Failure 500 {string}  {"code": -1, "data": "", "message": ""}
-// @Router /api/v1/multi-cloud/template [post]
 func CreateTemplateView(c *gin.Context) {
 	var (
 		err      error
@@ -40,14 +32,6 @@ func CreateTemplateView(c *gin.Context) {
 	tools.JSONOk(c, "Created successfully")
 }
 
-// @Summary 创建
-// @Description 查询模版基于app_key
-// @Accept  application/json
-// @Produce application/json
-// @Param   data   body multi_cloud_template.CloudTemplate  true   "Body数据格式"
-// @Success 200 {string}  {"code": 0, "data": "", "message": ""}
-// @Failure 500 {string}  {"code": -1, "data": "", "message": ""}
-// @Router /api/v1/multi-cloud/template [get]
 func CetTemplateByAppKeyView(c *gin.Context) {
 	var (
 		err       error
@@ -90,9 +74,8 @@ func CetTemplateByAppKeyView(c *gin.Context) {
 	tools.JSONOk(c, templates)
 }
 
-
 func DeleteTemplateView(c *gin.Context) {
-	var template  multi_cloud.CloudTemplate
+	var template multi_cloud.CloudTemplate
 
 	pk := c.Param("id")
 	pkUint, _ := tools.StringToUint(pk)

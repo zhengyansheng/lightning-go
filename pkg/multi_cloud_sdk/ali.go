@@ -3,7 +3,7 @@ package multi_cloud_sdk
 import (
 	"errors"
 	"fmt"
-	"go-ops/pkg/tools"
+	"lightning-go/pkg/tools"
 	"strings"
 
 	openapi "github.com/alibabacloud-go/darabonba-openapi/client"

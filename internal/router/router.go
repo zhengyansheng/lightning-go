@@ -1,13 +1,14 @@
 package router
 
 import (
+	_ "lightning-go/docs"
+	"lightning-go/internal/api/multi_cloud"
+	"lightning-go/internal/api/scheduler"
+	"lightning-go/internal/router/middleware"
+
 	"github.com/douyu/jupiter/pkg/server/xgin"
 	"github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
-	_ "go-ops/docs"
-	"go-ops/internal/api/multi_cloud"
-	"go-ops/internal/api/scheduler"
-	"go-ops/internal/router/middleware"
 )
 
 func InitRouters(server *xgin.Server) {

@@ -1,6 +1,6 @@
 package multi_cloud
 
-import "go-ops/internal/db"
+import "lightning-go/internal/db"
 
 // 记录生命周期
 type InstanceLifeCycle struct {

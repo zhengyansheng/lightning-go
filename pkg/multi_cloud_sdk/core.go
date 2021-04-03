@@ -1,7 +1,7 @@
 package multi_cloud_sdk
 
 import (
-	"go-ops/internal/models/multi_cloud"
+	"lightning-go/internal/models/multi_cloud"
 )
 
 type client interface {

@@ -2,8 +2,7 @@ package main
 
 import (
 	"github.com/douyu/jupiter/pkg/xlog"
-	_ "go-ops/docs"
-	"go-ops/internal/app"
+	"lightning-go/internal/app"
 )
 
 // @title lightning-go api

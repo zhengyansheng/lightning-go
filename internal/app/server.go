@@ -2,14 +2,15 @@ package app
 
 import (
 	"fmt"
+	"lightning-go/internal/db"
+	"lightning-go/internal/router"
+
 	"github.com/douyu/jupiter"
 	"github.com/douyu/jupiter/pkg/server/xgin"
 	"github.com/douyu/jupiter/pkg/util/xcolor"
 	"github.com/douyu/jupiter/pkg/util/xgo"
 	"github.com/douyu/jupiter/pkg/worker/xcron"
 	"github.com/douyu/jupiter/pkg/xlog"
-	"go-ops/internal/db"
-	"go-ops/internal/router"
 )
 
 type Engine struct {

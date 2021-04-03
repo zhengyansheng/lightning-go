@@ -14,7 +14,7 @@
 [jupiter.mysql.master]
    connMaxLifetime = "300s"
    debug = true
-   dsn = "root:12345678@tcp(127.0.0.1:3306)/go-ops?charset=utf8&parseTime=True&loc=Local&readTimeout=5s&timeout=5s&writeTimeout=3s"
+   dsn = "root:12345678@tcp(192.168.3.53:3306)/lightning-go?charset=utf8&parseTime=True&loc=Local&readTimeout=5s&timeout=5s&writeTimeout=3s"
    level = "panic"
    maxIdleConns = 50
    maxOpenConns = 100

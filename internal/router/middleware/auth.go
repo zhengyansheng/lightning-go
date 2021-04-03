@@ -2,11 +2,12 @@ package middleware
 
 import (
 	"fmt"
+
 	"github.com/douyu/jupiter/pkg/conf"
 	"github.com/gin-gonic/gin"
 	"github.com/go-resty/resty/v2"
 
-	"go-ops/pkg/tools"
+	"lightning-go/pkg/tools"
 )
 
 func JWTAuth() gin.HandlerFunc {

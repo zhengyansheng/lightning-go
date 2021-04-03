@@ -1,9 +1,10 @@
 package multi_cloud
 
 import (
+	"lightning-go/internal/db"
+	"lightning-go/internal/models"
+
 	"github.com/jinzhu/gorm"
-	"go-ops/internal/db"
-	"go-ops/internal/models"
 )
 
 // 创建云主机配置参数

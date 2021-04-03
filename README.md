@@ -50,6 +50,12 @@
 $ git clone git@github.com:zhengyansheng/lightning-go.git 
 ```
 
+```bash
+$ cd lightning-go
+$ go mod init lightning-go 
+
+```
+
 - 同步数据库
 ```bash
 # make migrate

@@ -3,15 +3,13 @@ package main
 import (
 	"fmt"
 
-	// "strings"
-
 	"github.com/douyu/jupiter"
 	"github.com/douyu/jupiter/pkg/conf"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 
-	"go-ops/internal/db"
-	"go-ops/internal/models/multi_cloud"
+	"lightning-go/internal/db"
+	"lightning-go/internal/models/multi_cloud"
 )
 
 const RECREATE = true
@@ -31,7 +29,6 @@ func main() {
 
 }
 
-// func migrateDB(cli *cli.Context) error {
 func initDB() error {
 	var dbName = "chaos"
 	gormdb, err := gorm.Open(
@@ -59,9 +56,6 @@ func initDB() error {
 	}()
 
 	models := []interface{}{
-		&db.SendDingConfig{},
-		&db.SendMailConfig{},
-		&db.SendDingHistory{},
 		&multi_cloud.CloudTemplate{},
 		&multi_cloud.Account{},
 	}

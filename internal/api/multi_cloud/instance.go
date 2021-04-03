@@ -2,8 +2,8 @@ package multi_cloud
 
 import (
 	"fmt"
-	"go-ops/pkg/multi_cloud_sdk"
-	"go-ops/pkg/tools"
+	"lightning-go/pkg/multi_cloud_sdk"
+	"lightning-go/pkg/tools"
 
 	"github.com/gin-gonic/gin"
 )
@@ -153,8 +153,8 @@ func ListInstancesView(c *gin.Context) {
 func InstanceDetailView(c *gin.Context) {
 	// Validate field
 	s := struct {
-		Account      string `form:"account" binding:"required"`
-		RegionId     string `form:"region_id" binding:"required"`
+		Account  string `form:"account" binding:"required"`
+		RegionId string `form:"region_id" binding:"required"`
 	}{}
 	if err := c.ShouldBind(&s); err != nil {
 		tools.JSONFailed(c, tools.MSG_ERR, err.Error())

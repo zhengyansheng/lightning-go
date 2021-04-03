@@ -1,6 +1,6 @@
 package scheduler
 
-import "go-ops/internal/db"
+import "lightning-go/internal/db"
 
 // 创建云主机配置参数
 type DagRun struct {

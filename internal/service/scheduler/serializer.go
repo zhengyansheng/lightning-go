@@ -3,11 +3,12 @@ package service
 import (
 	"encoding/json"
 	"fmt"
+	"lightning-go/pkg/request"
+	"lightning-go/pkg/tools"
+	"time"
+
 	"github.com/douyu/jupiter/pkg/conf"
 	"github.com/tidwall/gjson"
-	"go-ops/pkg/request"
-	"go-ops/pkg/tools"
-	"time"
 )
 
 // 验证结构体
@@ -151,9 +152,9 @@ func (s DagRunDataSerializer) Trigger() (interface{}, error) {
 }
 
 type DagMgt struct {
-	DagName string `json:"dag_name"`
+	DagName  string `json:"dag_name"`
 	DagRunId string `json:"dag_run_id"`
-	Limit   int    `json:"limit"`
+	Limit    int    `json:"limit"`
 }
 
 func (d DagMgt) ListDag() (DagListResponse, error) {
@@ -180,7 +181,7 @@ func (d DagMgt) ListDag() (DagListResponse, error) {
 
 func (d DagMgt) DetailDag() (DagDetailResponse, error) {
 	var (
-		dagUrl          string
+		dagUrl            string
 		dagDetailResponse DagDetailResponse
 	)
 	dagUrl = fmt.Sprintf("%s/api/v1/dags/%s",
@@ -199,10 +200,9 @@ func (d DagMgt) DetailDag() (DagDetailResponse, error) {
 	return dagDetailResponse, nil
 }
 
-
 func (d DagMgt) TaskInstance() (map[string]interface{}, error) {
 	var (
-		dagUrl          string
+		dagUrl  string
 		jsonMap = make(map[string]interface{})
 	)
 	d.Limit = 100

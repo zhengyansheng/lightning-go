@@ -2,9 +2,10 @@ package scheduler
 
 import (
 	"fmt"
-	"go-ops/internal/models/scheduler"
-	"go-ops/internal/service/scheduler"
-	"go-ops/pkg/tools"
+	"lightning-go/internal/models/scheduler"
+	"lightning-go/internal/service/scheduler"
+	"lightning-go/pkg/tools"
+
 	"strings"
 
 	"github.com/gin-gonic/gin"

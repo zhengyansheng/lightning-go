@@ -2,8 +2,8 @@ package multi_cloud
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-ops/internal/models/multi_cloud"
-	"go-ops/pkg/tools"
+	"lightning-go/internal/models/multi_cloud"
+	"lightning-go/pkg/tools"
 )
 
 func CreateAccountView(c *gin.Context) {
