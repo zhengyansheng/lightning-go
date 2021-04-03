@@ -31,8 +31,7 @@
 │   ├── migrate      # 创建表
 │   └── server       # 启动服务
 ├── config           # 配置文件
-│   ├── migrate.toml # 创建表配置文件
-│   └── server.toml  # 启动服务配置文件
+│   ├── config.toml  # 配置文件
 ├── go-ops.service   # 服务systemd文件
 ├── go.mod
 ├── go.sum
@@ -41,7 +40,7 @@
 │   ├── cron         # 定时任务
 │   ├── db           # 数据库
 │   └── http         # http
-├── log              # 日志目录
+├── logs             # 日志目录
 ├── pkg
 ├── scripts
 └── test             # 测试用例
