@@ -34,7 +34,49 @@ func NewAliEcs(accessKeyId, accessKeySecret, regionId string) (*aliyunClient, er
 	}, nil
 }
 
+
+// create and start
 func (ali *aliyunClient) CreateInstance(PayType, hostname, instanceType, zoneId, imageId, vpcId, subnetId string, securityGroupIds []string, dryRun bool) (instanceId string, err error) {
+	/*
+		实例的付费方式。取值范围：
+			PrePaid：包年包月
+			PostPaid（默认）：按量付费
+			选择包年包月时，您必须确认自己的账号支持余额支付或者信用支付，否则将返回InvalidPayMethod的错误提示。
+	*/
+	runInstancesRequest := &ecs.RunInstancesRequest{
+		InstanceChargeType: tea.String(PayType),
+		InstanceName:       tea.String(hostname),
+		Password:           tea.String(password),
+		InstanceType:       tea.String(instanceType),
+		RegionId:           tea.String(ali.regionId),
+		ZoneId:             tea.String(zoneId),
+		ImageId:            tea.String(imageId),
+		DryRun:             tea.Bool(dryRun),
+		VSwitchId:          tea.String(subnetId),
+		SecurityGroupId:    tea.String(securityGroupIds[0]),
+	}
+
+	if runInstancesRequest.InstanceChargeType == tea.String("PrePaid") {
+		// 包年包月 特殊设置
+		runInstancesRequest.PeriodUnit = tea.String("Month")
+		runInstancesRequest.Period = tea.Int32(1)
+		runInstancesRequest.AutoRenew = tea.Bool(true)
+		runInstancesRequest.AutoRenewPeriod = tea.Int32(1)
+	}
+	response, err := ali.ecsClt.RunInstances(runInstancesRequest)
+	if err != nil {
+		return "Call RunInstances error", err
+	}
+	instanceIdSet := response.Body.InstanceIdSets.InstanceIdSet
+	if len(instanceIdSet) == 0 {
+		return "instance set not found.", errors.New("Request ok, but instance create not success. ")
+	}
+	return tea.StringValue(instanceIdSet[0]), nil
+}
+
+
+// create
+func (ali *aliyunClient) CreateInstanceButStop(PayType, hostname, instanceType, zoneId, imageId, vpcId, subnetId string, securityGroupIds []string, dryRun bool) (instanceId string, err error) {
 	/*
 		实例的付费方式。取值范围：
 			PrePaid：包年包月

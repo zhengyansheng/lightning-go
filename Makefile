@@ -8,7 +8,7 @@ migrate:
 	@go run cmd/migrate/main.go --config=config/config.toml
 
 migrate-prod:
-	@go run cmd/migrate/main.go --config=config/migrate-prod.toml
+	@go run cmd/migrate/main.go --config=config/config-prod.toml
 
 swagger:
 	@swag init -g cmd/server/main.go
