@@ -1,6 +1,9 @@
 run:
 	@go run cmd/server/main.go --config=config/config.toml
 
+run-prod:
+	@go run cmd/server/main.go --config=config/config-prod.toml
+
 migrate:
 	@go run cmd/migrate/main.go --config=config/config.toml
 

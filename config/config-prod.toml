@@ -8,13 +8,13 @@
     debug = true
     MaxAge = 2
     MaxBackup = 10
-    Dir = "./log/"
+    Dir = "./logs/"
     Async = false
 
 [jupiter.mysql.master]
    connMaxLifetime = "300s"
    debug = true
-   dsn = "root:12345678@tcp(192.168.3.53:3306)/lightning-go?charset=utf8&parseTime=True&loc=Local&readTimeout=5s&timeout=5s&writeTimeout=3s"
+   dsn = "root:123456@tcp(127.0.0.1:3306)/lightning-go?charset=utf8&parseTime=True&loc=Local&readTimeout=5s&timeout=5s&writeTimeout=3s"
    level = "panic"
    maxIdleConns = 50
    maxOpenConns = 100
@@ -22,7 +22,7 @@
 [jupiter.mysql.airflow]
    connMaxLifetime = "300s"
    debug = true
-   dsn = "zhengyansheng:zhengyansheng@2021@tcp(www.aiops724.com:3306)/airflow?charset=utf8&parseTime=True&loc=Local&readTimeout=5s&timeout=5s&writeTimeout=3s"
+   dsn = "root:123456@tcp(127.0.0.1:3306)/airflow?charset=utf8&parseTime=True&loc=Local&readTimeout=5s&timeout=5s&writeTimeout=3s"
    level = "panic"
    maxIdleConns = 50
    maxOpenConns = 100
