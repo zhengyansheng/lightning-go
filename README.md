@@ -10,7 +10,7 @@
 
 
 ## 模块介绍
-- [x] 多云管理 
+- [x] 多云云主机资源管理
     - [x] 阿里云 
     - [ ] 腾讯云 
     - [ ] 华为云 
@@ -23,7 +23,13 @@
 - [ ] 定时任务
 
 
+
+<img src="./imgs/vm1.png" alt="vm1" style="zoom: 50%;" />
+
+<img src="./imgs/vm2.png" alt="vm2" style="zoom: 50%;" />
+
 ## 项目目录结构
+
 ```bash
 ├── README.md
 ├── build.sh
@@ -74,3 +80,4 @@ $ go mod init lightning-go
 # make swagger
 ```
 
+## 
