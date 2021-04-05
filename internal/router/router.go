@@ -13,15 +13,12 @@ import (
 
 func InitRouters(server *xgin.Server) {
 
-	// set message center router
-	send := server.Group("/api/v1/message")
-
 	// set Cors middleware
 	//send.Use(middleware.Cors())
 	//send.Use(cors.Default())
 
 	// set ReQueSetId middleware
-	send.Use(middleware.SetRId())
+	//send.Use(middleware.SetRId())
 
 	// set JWTauth middleware
 	//send.Use(middleware.JWTAuth())
