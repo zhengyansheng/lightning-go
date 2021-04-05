@@ -2,10 +2,11 @@ package multi_cloud
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
+	"lightning-go/internal/models/multi_cloud"
 	"lightning-go/pkg/multi_cloud_sdk"
 	"lightning-go/pkg/tools"
-
-	"github.com/gin-gonic/gin"
+	"reflect"
 )
 
 func CreateInstanceView(c *gin.Context) {
@@ -23,7 +24,6 @@ func CreateInstanceView(c *gin.Context) {
 		Hostname         string   `json:"hostname" binding:"required"`
 		DryRun           bool     `json:"dry_run" binding:"omitempty"`
 	}{}
-	fmt.Println(c.Request.Body)
 	if err := c.ShouldBindJSON(&s); err != nil {
 		tools.JSONFailed(c, tools.MSG_ERR, fmt.Sprintf("ShouldBindJSON %v", err.Error()))
 		return
@@ -257,4 +257,28 @@ func ModifyInstanceNameView(c *gin.Context) {
 	}
 	// Response
 	tools.JSONOk(c, response)
+}
+
+func LifeCyclelView(c *gin.Context) {
+	// Validate field
+	var cycleArr = [](map[string]interface{}){}
+	var cycle = multi_cloud.InstanceLifeCycle{}
+	cycle.InstanceId = c.Param("instance_id")
+
+	// List
+	response, err := cycle.GetByInstanceId()
+	if err != nil {
+		tools.JSONFailed(c, tools.MSG_ERR, err.Error())
+		return
+	}
+
+	// Response
+	for _, v := range response {
+		t := make(map[string]interface{})
+		fmt.Println(v.CreatedAt, reflect.TypeOf(v.CreatedAt))
+		formatDateTime := v.CreatedAt.Format("2006-01-02 15:04:05")
+		t[formatDateTime] = v.Uri
+		cycleArr = append(cycleArr, t)
+	}
+	tools.JSONOk(c, cycleArr)
 }

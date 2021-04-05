@@ -62,7 +62,7 @@ func JSONOk(c *gin.Context, data ...interface{}) {
 
 	c.JSON(http.StatusOK, JSONResult{
 		Code:      MSG_OK,
-		Message:   "Ok",
+		Message:   "",
 		Data:      result,
 		RequestId: c.Request.Header.Get("X-Request-Id"),
 	})

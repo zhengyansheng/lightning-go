@@ -7,7 +7,7 @@ import (
 )
 
 type client interface {
-	CreateInstance(PayType, hostname, instanceType, zoneId, imageId, vpcId, subnetId string, securityGroupIds []string, dryRun bool) (string, error)
+	CreateInstance(PayType, hostname, instanceType, zoneId, imageId, vpcId, subnetId string, securityGroupIds []string, dryRun bool) (map[string]string, error)
 	StartInstance(string) (string, error)
 	StopInstance(string) (string, error)
 	RebootInstance(string, bool) (string, error)

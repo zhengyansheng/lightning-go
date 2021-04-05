@@ -11,7 +11,7 @@ import (
 
 	"github.com/douyu/jupiter/pkg/xlog"
 	"github.com/gin-gonic/gin"
-	uuid "github.com/satori/go.uuid"
+	"github.com/satori/go.uuid"
 )
 
 /*
@@ -88,9 +88,18 @@ func LifeCycle() gin.HandlerFunc {
 		if err == nil {
 			if jsonResult.Code == tools.MSG_OK {
 				cycle.IsSuccess = true
+				if vInstanceInfo, ok := jsonResult.Data.(map[string]interface{}); ok {
+					cycle.InstanceId = vInstanceInfo["instance_id"].(string)
+				} else {
+					bodyInfo, err := tools.StringToMap(rawData)
+					if err != nil {
+						xlog.Infof("string to map err :%v", err)
+					}
+					if instanceId, ok := bodyInfo["instance_id"].(string); ok {
+						cycle.InstanceId = instanceId
+					}
+					fmt.Println(4)
 
-				if vInstanceId, ok := jsonResult.Data.(string); ok {
-					cycle.InstanceId = vInstanceId
 				}
 			}
 		} else {
@@ -98,7 +107,6 @@ func LifeCycle() gin.HandlerFunc {
 		}
 
 		// 6. save
-		tools.PrettyPrint(cycle)
 		_ = cycle.Create()
 
 	}

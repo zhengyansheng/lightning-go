@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/fatih/structs"
 )
@@ -57,4 +58,8 @@ func CompressStr(str string) string {
 	//匹配一个或多个空白符的正则表达式
 	reg := regexp.MustCompile("\\s+")
 	return reg.ReplaceAllString(str, "")
+}
+
+func FormatNormalDateTime(dateTime time.Time) string {
+	return dateTime.Format("2006-01-02 15:04:05")
 }

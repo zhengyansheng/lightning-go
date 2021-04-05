@@ -32,7 +32,7 @@ func NewTenCvm(accessKeyId, accessKeySecret, regionId string) (*tencentcloudClie
 	}, nil
 }
 
-func (ten *tencentcloudClient) CreateInstance(instanceChargeType, hostname, instanceType, zoneId, imageId, vpcId, subnetId string, securityGroupIds []string, dryRun bool) (instanceId string, err error) {
+func (ten *tencentcloudClient) CreateInstance(instanceChargeType, hostname, instanceType, zoneId, imageId, vpcId, subnetId string, securityGroupIds []string, dryRun bool) (instanceInfo map[string]string, err error) {
 	//fmt.Println(hostname, instanceType, zoneId, imageId, dryRun)
 	/*
 		instanceChargeType 实例付费类型
@@ -41,6 +41,7 @@ func (ten *tencentcloudClient) CreateInstance(instanceChargeType, hostname, inst
 			CDHPAID：独享子机（基于专用宿主机创建，宿主机部分的资源不收费）
 			SPOTPAID：竞价付费
 	*/
+	instanceInfo = make(map[string]string)
 	request := cvm.NewRunInstancesRequest()
 
 	if instanceChargeType == "PostPaid" {
@@ -52,7 +53,7 @@ func (ten *tencentcloudClient) CreateInstance(instanceChargeType, hostname, inst
 			RenewFlag: common.StringPtr("NOTIFY_AND_AUTO_RENEW"),
 		}
 	} else {
-		return "Not support.", errors.New("instanceChargeType only support PostPaid or PrePaid")
+		return instanceInfo, errors.New("instanceChargeType only support PostPaid or PrePaid")
 	}
 	request.InstanceType = common.StringPtr(instanceType)
 	request.Placement = &cvm.Placement{
@@ -77,17 +78,18 @@ func (ten *tencentcloudClient) CreateInstance(instanceChargeType, hostname, inst
 	//	return fmt.Sprintf("An API error has returned: %s", err), err
 	//}
 	if err != nil {
-		return "Call RunInstances error", err
+		return instanceInfo, err
 	}
 	fmt.Printf("%s", response.ToJsonString())
 	fmt.Println(response.Response.InstanceIdSet)
 
 	instanceIdSet := response.Response.InstanceIdSet
-	requestId := response.Response.RequestId
+	//requestId := response.Response.RequestId
 	if len(instanceIdSet) != 1 {
-		return fmt.Sprintf("instanceId not found, requestId %v", requestId), err
+		return instanceInfo, err
 	} else {
-		return common.StringValues(instanceIdSet)[0], nil
+		instanceInfo["instance_id"] = common.StringValues(instanceIdSet)[0]
+		return instanceInfo, nil
 	}
 }
 
