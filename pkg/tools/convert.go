@@ -2,6 +2,7 @@ package tools
 
 import (
 	"encoding/json"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -26,6 +27,12 @@ func StructToMap(s interface{}) (m map[string]interface{}) {
 	return
 }
 
+func StringToMap(s []byte) (m map[string]interface{}, err error) {
+	m = make(map[string]interface{})
+	err = json.Unmarshal(s, &m)
+	return
+}
+
 func ByteToJson(b []byte) (data map[string]interface{}, err error) {
 	err = json.Unmarshal(b, &data)
 	return
@@ -40,4 +47,14 @@ func ReplaceDateTime(dTime string) string {
 	// "2020-11-02T15:38Z"
 	s := strings.Replace(dTime, "T", " ", -1)
 	return strings.Replace(s, "Z", " ", -1)
+}
+
+//利用正则表达式压缩字符串，去除空格或制表符
+func CompressStr(str string) string {
+	if str == "" {
+		return ""
+	}
+	//匹配一个或多个空白符的正则表达式
+	reg := regexp.MustCompile("\\s+")
+	return reg.ReplaceAllString(str, "")
 }

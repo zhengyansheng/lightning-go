@@ -34,7 +34,6 @@ func NewAliEcs(accessKeyId, accessKeySecret, regionId string) (*aliyunClient, er
 	}, nil
 }
 
-
 // create and start
 func (ali *aliyunClient) CreateInstance(PayType, hostname, instanceType, zoneId, imageId, vpcId, subnetId string, securityGroupIds []string, dryRun bool) (instanceId string, err error) {
 	/*
@@ -73,7 +72,6 @@ func (ali *aliyunClient) CreateInstance(PayType, hostname, instanceType, zoneId,
 	}
 	return tea.StringValue(instanceIdSet[0]), nil
 }
-
 
 // create
 func (ali *aliyunClient) CreateInstanceButStop(PayType, hostname, instanceType, zoneId, imageId, vpcId, subnetId string, securityGroupIds []string, dryRun bool) (instanceId string, err error) {

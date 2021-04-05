@@ -1,11 +1,39 @@
 package middleware
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"lightning-go/internal/models/multi_cloud"
+	"lightning-go/pkg/tools"
+	"strings"
+
 	"github.com/douyu/jupiter/pkg/xlog"
 	"github.com/gin-gonic/gin"
-	"github.com/satori/go.uuid"
+	uuid "github.com/satori/go.uuid"
 )
+
+/*
+	创建
+	变更
+		开机
+		关机
+		重启
+		升配
+		降配
+	下线
+*/
+
+type responseBodyWriter struct {
+	gin.ResponseWriter
+	body *bytes.Buffer
+}
+
+func (r responseBodyWriter) Write(b []byte) (int, error) {
+	r.body.Write(b)
+	return r.ResponseWriter.Write(b)
+}
 
 func LifeCycle() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -15,7 +43,7 @@ func LifeCycle() gin.HandlerFunc {
 		if requestId == "" {
 			id, err := uuid.NewV4()
 			if err != nil {
-				xlog.Infof("requeset ID err :%v", err)
+				xlog.Infof("request ID err :%v", err)
 				return
 			}
 			requestId = fmt.Sprintf("%s", id)
@@ -24,19 +52,54 @@ func LifeCycle() gin.HandlerFunc {
 		c.Writer.Header().Set("X-Request-Id", requestId)
 
 		//2. 记录事件生命周期
-		/*
-		   action
-		   uri
-		   method
-		   instanceId
-		   Body
-		   Response
-		   IsSuccess
-		   createUser
-		   execState
-		*/
+		//cCp := c.Copy()
+		rawData, _ := c.GetRawData()
+		// 重新赋值
+		c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(rawData))
+
+		cycle := multi_cloud.InstanceLifeCycle{
+			Uri:      c.Request.URL.Path,
+			Method:   c.Request.Method,
+			Query:    c.Request.URL.RawQuery,
+			Body:     rawData,
+			RemoteIp: c.ClientIP(),
+		}
+
+		headerAuthorization := c.Request.Header.Get("Authorization")
+		if headerAuthorization != "" {
+			authArr := strings.Split(headerAuthorization, " ")
+			if len(authArr) == 2 {
+				cycle.CreateUser = authArr[1]
+			}
+		}
+
+		// https://github.com/gin-gonic/gin/issues/1363
+		w := &responseBodyWriter{body: &bytes.Buffer{}, ResponseWriter: c.Writer}
+		c.Writer = w
 
 		c.Next()
+
+		// 4. attach field response
+		cycle.Response = []byte(w.body.String())
+
+		// 5. attach field IsSuccess
+		var jsonResult tools.JSONResult
+		err := json.Unmarshal([]byte(w.body.String()), &jsonResult)
+		if err == nil {
+			if jsonResult.Code == tools.MSG_OK {
+				cycle.IsSuccess = true
+
+				if vInstanceId, ok := jsonResult.Data.(string); ok {
+					cycle.InstanceId = vInstanceId
+				}
+			}
+		} else {
+			xlog.Infof("middleware attach instance_id and is_success field err :%v", err)
+		}
+
+		// 6. save
+		tools.PrettyPrint(cycle)
+		_ = cycle.Create()
 
 	}
 }

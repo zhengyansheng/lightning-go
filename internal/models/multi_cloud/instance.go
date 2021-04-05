@@ -1,17 +1,22 @@
 package multi_cloud
 
-import "lightning-go/internal/db"
+import (
+	"lightning-go/internal/db"
+	"lightning-go/internal/models"
+)
 
 // 记录生命周期
 type InstanceLifeCycle struct {
-	ID         uint   `gorm:"primary_key" json:"id"`
-	Action     string `json:"action" binding:"required"` // 动作; 关机，开机，重启，创建, 销毁
-	Uri        string `json:"uri"`
-	Method     string `json:"method"`
-	InstanceId string `json:"instance_id"`
-	Body       string `json:"body"`
-	Response   string `json:"response"`
-	IsSuccess  bool   `json:"is_success"`
+	InstanceId string      `json:"instance_id"`
+	Uri        string      `json:"uri"`
+	Method     string      `json:"method"`
+	Query      string      `json:"query"`
+	Body       models.JSON `json:"body" gorm:"type:text"`
+	RemoteIp   string      `json:"remote_ip"`
+	CreateUser string      `json:"create_user"`
+	Response   models.JSON `json:"response"`
+	IsSuccess  bool        `json:"is_success"` // 0 fail || 1 success
+	CreatedAt  models.JSONTime
 }
 
 func (s *InstanceLifeCycle) TableName() string {

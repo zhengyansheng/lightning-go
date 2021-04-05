@@ -58,6 +58,7 @@ func initDB() error {
 	models := []interface{}{
 		&multi_cloud.CloudTemplate{},
 		&multi_cloud.Account{},
+		&multi_cloud.InstanceLifeCycle{},
 	}
 	if RECREATE {
 		gormdb.DropTableIfExists(models...)

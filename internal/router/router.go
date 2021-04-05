@@ -45,16 +45,16 @@ func InitRouters(server *xgin.Server) {
 		template.DELETE("/:id", multi_cloud.DeleteTemplateView)
 	}
 	instance := server.Group("/api/v1/multi-cloud/instance")
-	instance.Use(middleware.LifeCycle()) // 记录生命周期事件
+	//instance.Use(middleware.LifeCycle()) // 记录生命周期事件
 	{
-		instance.POST("/create", multi_cloud.CreateInstanceView)
-		instance.POST("/start", multi_cloud.StartInstanceView)
-		instance.POST("/stop", multi_cloud.StopInstanceView)
-		instance.POST("/reboot", multi_cloud.RebootInstanceView)
-		instance.POST("/destroy", multi_cloud.DestroyInstanceView)
-		instance.POST("/modify_instance_name", multi_cloud.ModifyInstanceNameView)
+		instance.POST("/create", middleware.LifeCycle(), multi_cloud.CreateInstanceView)
+		instance.POST("/start", middleware.LifeCycle(), multi_cloud.StartInstanceView)
+		instance.POST("/stop", middleware.LifeCycle(), multi_cloud.StopInstanceView)
+		instance.POST("/reboot", middleware.LifeCycle(), multi_cloud.RebootInstanceView)
+		instance.POST("/modify_instance_name", middleware.LifeCycle(), multi_cloud.ModifyInstanceNameView)
 		instance.GET("/", multi_cloud.ListInstancesView)
 		instance.GET("/:id", multi_cloud.InstanceDetailView)
+		instance.POST("/destroy", middleware.LifeCycle(), multi_cloud.DestroyInstanceView)
 	}
 	region := server.Group("/api/v1/multi-cloud/regions")
 	{

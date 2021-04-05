@@ -13,7 +13,6 @@ func CreateInstanceView(c *gin.Context) {
 	s := struct {
 		Account          string   `json:"account" binding:"required"`
 		PayType          string   `json:"pay_type" binding:"required"`
-		Hostname         string   `json:"hostname" binding:"required"`
 		RegionId         string   `json:"region_id" binding:"required"`
 		ZoneId           string   `json:"zone_id" binding:"required"`
 		InstanceType     string   `json:"instance_type" binding:"required"`
@@ -21,17 +20,19 @@ func CreateInstanceView(c *gin.Context) {
 		VpcId            string   `json:"vpc_id" binding:"required"`
 		SubnetId         string   `json:"subnet_id" binding:"required"`
 		SecurityGroupIds []string `json:"security_group_ids" binding:"required"`
+		Hostname         string   `json:"hostname" binding:"required"`
 		DryRun           bool     `json:"dry_run" binding:"omitempty"`
 	}{}
+	fmt.Println(c.Request.Body)
 	if err := c.ShouldBindJSON(&s); err != nil {
-		tools.JSONFailed(c, tools.MSG_ERR, err.Error())
+		tools.JSONFailed(c, tools.MSG_ERR, fmt.Sprintf("ShouldBindJSON %v", err.Error()))
 		return
 	}
 	// Factory CreateInstance
 	tools.PrettyPrint(s)
 	clt, err := multi_cloud_sdk.NewFactoryByAccount(s.Account, s.RegionId)
 	if err != nil {
-		tools.JSONFailed(c, tools.MSG_ERR, err.Error())
+		tools.JSONFailed(c, tools.MSG_ERR, fmt.Sprintf("NewFactoryByAccount %v", err.Error()))
 		return
 	}
 	response, err := clt.CreateInstance(s.PayType, s.Hostname, s.InstanceType, s.ZoneId, s.ImageId, s.VpcId, s.SubnetId, s.SecurityGroupIds, s.DryRun)
