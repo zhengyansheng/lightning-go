@@ -25,10 +25,11 @@ func Post(body []byte, header map[string]string, url string, timeout time.Durati
 		return nil, err
 	}
 	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("remote server occer error and http code is %d", resp.StatusCode)
-	}
 	response, _ := ioutil.ReadAll(resp.Body)
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("remote server occer error and http code is %d, response: %v", resp.StatusCode, string(response))
+	}
+	//response, _ := ioutil.ReadAll(resp.Body)
 	return response, nil
 }
 
@@ -94,5 +95,29 @@ func GetWithHeader(url string, header map[string]string, timeout time.Duration) 
 		return nil, fmt.Errorf("remote server occer error and http code is %d", resp.StatusCode)
 	}
 	response, _ := ioutil.ReadAll(resp.Body)
+	return response, nil
+}
+
+func Put(body []byte, header map[string]string, url string, timeout time.Duration) ([]byte, error) {
+	req, err := http.NewRequest("PUT", url, bytes.NewBuffer(body))
+	if err != nil {
+		return nil, err
+	}
+	for key, value := range header {
+		req.Header.Set(key, value)
+	}
+	client := &http.Client{}
+	if timeout != 0 {
+		client.Timeout = timeout
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	response, _ := ioutil.ReadAll(resp.Body)
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("remote server occer error and http code is %d, response: %v", resp.StatusCode, string(response))
+	}
 	return response, nil
 }

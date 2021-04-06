@@ -80,4 +80,13 @@ $ go mod init lightning-go
 # make swagger
 ```
 
-## 
+## 定时任务
+
+- 同步云主机元数据
+    - 同步新增
+    - 变更
+    - 通知异常
+
+```bash
+$ go run scripts/cron/cron_sync_instance.go
+```

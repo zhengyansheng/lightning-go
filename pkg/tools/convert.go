@@ -47,7 +47,7 @@ func JsonToByte(data map[string]interface{}) (b []byte, err error) {
 func ReplaceDateTime(dTime string) string {
 	// "2020-11-02T15:38Z"
 	s := strings.Replace(dTime, "T", " ", -1)
-	return strings.Replace(s, "Z", " ", -1)
+	return strings.Trim(strings.Replace(s, "Z", " ", -1), " ")
 }
 
 //利用正则表达式压缩字符串，去除空格或制表符
