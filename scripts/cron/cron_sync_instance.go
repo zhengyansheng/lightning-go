@@ -6,6 +6,7 @@ import (
 	"lightning-go/pkg/request"
 	"lightning-go/pkg/tools"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/tidwall/gjson"
@@ -20,7 +21,8 @@ var (
 	cmdbUri       = "/api/v1/cmdb/instances/"
 	cmdbUpdateUri = "/api/v1/cmdb/instances/multi_update/"
 	accounts      = []string{
-		"ali.lightning",
+		//"ali.lightning",
+		"ten.lightning",
 	}
 )
 
@@ -89,7 +91,7 @@ func postCmdb(instances map[string]interface{}) (string, error) {
 	return "", nil
 }
 
-func UpdateCmdb(instances []map[string]interface{}) (string, error) {
+func updateCmdb(instances []map[string]interface{}) (string, error) {
 	url := fmt.Sprintf("%s%s", opsHost, cmdbUpdateUri)
 	fmt.Printf("url:%s\n", url)
 	headers := make(map[string]string)
@@ -106,6 +108,7 @@ func UpdateCmdb(instances []map[string]interface{}) (string, error) {
 }
 
 func main() {
+	var wg sync.WaitGroup
 	for _, account := range accounts {
 		//1. 获取平台下所有的地域
 		regionMap, err := getCloudPlatRegions(account)
@@ -116,33 +119,38 @@ func main() {
 
 		//2. 获取云主机信息
 		for _, info := range regionMap {
-			instances, err := getInstances(account, info["region_id"])
-			if err != nil {
-				fmt.Println("getInstances err", err)
-				continue
-			}
-			if len(instances) == 0 {
-				fmt.Printf("region_id: %s instances not found.\n", info["region_id"])
-				continue
-			}
-			for _, instanceInfo := range instances {
-				//3. 同步云主机信息
-				instanceInfo["account"] = account
-				tools.PrettyPrint(instanceInfo)
-				res, err := postCmdb(instanceInfo)
+			wg.Add(1)
+			go func(account, regionId string) {
+				defer wg.Done()
+				instances, err := getInstances(account, regionId)
 				if err != nil {
-					fmt.Printf("Post cmdb err: %v, response: %v\n", err, res)
+					fmt.Println("getInstances err", err)
+					return
 				}
-				//4. 变更云主机信息到cmdb
-				instanceArr := []map[string]interface{}{}
-				instanceArr = append(instanceArr, instanceInfo)
-				res, err = UpdateCmdb(instanceArr)
-				if err != nil {
-					//fmt.Printf("Update cmdb err: %v, response: %v\n", err, res)
+				if len(instances) == 0 {
+					fmt.Printf("account: %s region_id: %s instances not found.\n", account, regionId)
+					return
 				}
-			}
+				fmt.Printf("account: %s region_id: %s instances length %d.\n", account, regionId, len(instances))
+				for _, instanceInfo := range instances {
+					//3. 同步云主机信息
+					instanceInfo["account"] = account
+					tools.PrettyPrint(instanceInfo)
+					res, err := postCmdb(instanceInfo)
+					if err != nil {
+						fmt.Printf("Post cmdb err: %v, response: %v\n", err, res)
+					}
+					//4. 变更云主机信息到cmdb
+					instanceArr := []map[string]interface{}{}
+					instanceArr = append(instanceArr, instanceInfo)
+					res, err = updateCmdb(instanceArr)
+					if err != nil {
+					}
+				}
+			}(account, info["region_id"])
 		}
-
 	}
+	wg.Wait()
+	fmt.Println("cron sync instance ok.")
 
 }
