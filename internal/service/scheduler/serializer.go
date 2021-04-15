@@ -11,10 +11,18 @@ import (
 	"github.com/tidwall/gjson"
 )
 
+type CreateInstance struct {
+	Data    map[string]interface{} `json:"data" binding:"required"`
+}
+
 // 验证结构体
 type DagRunDataSerializer struct {
 	DagName string                 `json:"dag_name"`
 	Data    map[string]interface{} `json:"data" binding:"required"`
+}
+
+type DagRunDataV2Serializer struct {
+	CreateInstance //匿名字段
 }
 
 type DagRunResponse struct {

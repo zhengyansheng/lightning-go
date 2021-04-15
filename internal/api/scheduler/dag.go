@@ -2,6 +2,7 @@ package scheduler
 
 import (
 	"fmt"
+	"io/ioutil"
 	"lightning-go/internal/models/scheduler"
 	"lightning-go/internal/service/scheduler"
 	"lightning-go/pkg/tools"
@@ -13,6 +14,30 @@ import (
 
 // 触发Dag
 func TriggerDagRun(c *gin.Context) {
+	// 接收所有参数 不做验证
+	var dagRun service.DagRunDataSerializer
+	dagRun.DagName = c.Param("dagName") // /:id
+	bytes, err := ioutil.ReadAll(c.Request.Body)
+	if err != nil {
+		tools.JSONFailed(c, tools.MSG_ERR, err.Error())
+		return
+	}
+	paramData, err := tools.ByteToJson(bytes)
+	if err != nil {
+		tools.JSONFailed(c, tools.MSG_ERR, err.Error())
+		return
+	}
+	dagRun.Data = paramData
+	msg, err := dagRun.Trigger()
+	if err != nil {
+		tools.JSONFailed(c, tools.MSG_ERR, err.Error())
+		return
+	}
+	tools.JSONOk(c, msg)
+}
+
+// 触发Dag
+func TriggerDagRunV2(c *gin.Context) {
 	// Validate
 	var dagRun service.DagRunDataSerializer
 	if err := c.ShouldBindJSON(&dagRun); err != nil {

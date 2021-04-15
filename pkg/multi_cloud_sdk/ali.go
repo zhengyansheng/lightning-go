@@ -262,7 +262,7 @@ func (ali *aliyunClient) processInstance(instance *ecs.DescribeInstancesResponse
 		"public_ip":            publicIpAddress,
 		"eip_ip":               instance.EipAddress.IpAddress,
 		"instance_name":        instance.InstanceName,
-		"hostname":             instance.HostName,
+		"hostname":             instance.InstanceName,
 		"image_id":             instance.ImageId,
 		"os_system":            instance.OSType,
 		"os_version":           instance.OSName,
