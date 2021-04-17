@@ -1,6 +1,8 @@
 package multi_cloud
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"lightning-go/internal/models/multi_cloud"
 	"lightning-go/pkg/tools"
 
@@ -50,4 +52,32 @@ func DeleteAccountView(c *gin.Context) {
 	}
 	// Response
 	tools.JSONOk(c, "Delete ok.")
+}
+
+func UpdateAccountView(c *gin.Context) {
+	var s multi_cloud.Account
+	pk := c.Param("id")
+	pkUint, _ := tools.StringToUint(pk)
+	s.ID = pkUint
+
+	// Update
+	bytes, err := ioutil.ReadAll(c.Request.Body)
+	if err != nil {
+		tools.JSONFailed(c, tools.MSG_ERR, err.Error())
+		return
+	}
+	data := make(map[string]interface{})
+	err = json.Unmarshal(bytes, &data)
+	if err != nil {
+		tools.JSONFailed(c, tools.MSG_ERR, err.Error())
+		return
+	}
+	err = s.Update(data)
+	if err != nil {
+		tools.JSONFailed(c, tools.MSG_ERR, err.Error())
+		return
+	}
+	// Response
+	tools.JSONOk(c, "", "Update ok.")
+
 }

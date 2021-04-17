@@ -27,6 +27,11 @@ func (s *Account) Delete() (err error) {
 	return
 }
 
+func (s *Account) Update(data map[string]interface{}) (err error) {
+	err = db.DB.Debug().Table(s.TableName()).Where("ID = ?", s.ID).Update(data).Error
+	return
+}
+
 func (s *Account) List() (accounts []Account, err error) {
 	err = db.DB.Debug().Table(s.TableName()).Find(&accounts).Error
 	return

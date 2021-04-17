@@ -192,7 +192,23 @@ func (ten *tencentcloudClient) ResetInstance() ([]map[string]string, error) {
 }
 
 func (ten *tencentcloudClient) ListInstance(instanceId string) (map[string]interface{}, error) {
-	return nil, nil
+	var instanceInfo = make(map[string]interface{})
+	request := cvm.NewDescribeInstancesRequest()
+	request.InstanceIds = common.StringPtrs([]string{instanceId})
+	response, err := ten.cvmClt.DescribeInstances(request)
+	if err != nil {
+		return instanceInfo, err
+	}
+	// 如果返回结果集中为空 则退出循环
+	if len(response.Response.InstanceSet) == 0 {
+		return instanceInfo, errors.New("Response instanceSet count 0 ")
+	}
+	info, err := ten.processInstance(response.Response.InstanceSet[0])
+	if err != nil {
+		return instanceInfo, err
+	}
+	instanceInfo = info
+	return instanceInfo, nil
 }
 
 func (ten *tencentcloudClient) ListInstances() ([]map[string]interface{}, error) {
@@ -249,7 +265,7 @@ func (ten *tencentcloudClient) processInstance(instance *cvm.Instance) (map[stri
 		"subnet_id":            instance.VirtualPrivateCloud.SubnetId,
 		"security_group_ids":   instance.SecurityGroupIds,
 		"state":                strings.ToLower(*instance.InstanceState),
-		"mem_total":            *instance.Memory / 1024,
+		"mem_total":            *instance.Memory,
 		"cpu_total":            instance.CPU,
 		"start_time":           "",
 		"create_time":          tools.ReplaceDateTime(*instance.CreatedTime),

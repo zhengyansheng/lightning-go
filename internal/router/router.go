@@ -66,5 +66,6 @@ func InitRouters(server *xgin.Server) {
 		account.POST("", multi_cloud.CreateAccountView)
 		account.GET("/", multi_cloud.ListAccountView)
 		account.DELETE("/:id", multi_cloud.DeleteAccountView)
+		account.PUT("/:id", multi_cloud.UpdateAccountView)
 	}
 }

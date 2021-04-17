@@ -2,6 +2,7 @@ package tools
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -54,15 +55,24 @@ func JSONFailed(c *gin.Context, Code int, message string) {
 // Json 成功返回
 func JSONOk(c *gin.Context, data ...interface{}) {
 	var result interface{}
-	if len(data) > 0 {
+	var message string
+	fmt.Println(data, len(data))
+	if len(data) > 0 && len(data) <= 1 {
 		result = data[0]
+	} else if len(data) > 1 {
+		v, ok := data[1].(string)
+		if ok {
+			message = v
+		} else {
+			message = ""
+		}
 	} else {
 		result = ""
 	}
 
 	c.JSON(http.StatusOK, JSONResult{
 		Code:      MSG_OK,
-		Message:   "",
+		Message:   message,
 		Data:      result,
 		RequestId: c.Request.Header.Get("X-Request-Id"),
 	})
