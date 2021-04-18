@@ -14,14 +14,13 @@ import (
 
 var (
 	multiCloudHost = "http://127.0.0.1:9900"
-	//opsHost        = "http://127.0.0.1:9000"
-	opsHost       = "http://ops.aiops724.com"
-	regionUri     = "/api/v1/multi-cloud/regions/"
-	instanceUri   = "/api/v1/multi-cloud/instance/"
-	cmdbUri       = "/api/v1/cmdb/instances/"
-	cmdbUpdateUri = "/api/v1/cmdb/instances/multi_update/"
-	accounts      = []string{
-		//"ali.lightning",
+	opsHost        = "http://ops.aiops724.com"
+	regionUri      = "/api/v1/multi-cloud/regions/"
+	instanceUri    = "/api/v1/multi-cloud/instance/"
+	cmdbUri        = "/api/v1/cmdb/instances/"
+	cmdbUpdateUri  = "/api/v1/cmdb/instances/multi_update/"
+	accounts       = []string{
+		"ali.lightning",
 		"ten.lightning",
 	}
 )

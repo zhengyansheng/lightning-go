@@ -33,7 +33,7 @@ func (s *Account) Update(data map[string]interface{}) (err error) {
 }
 
 func (s *Account) List() (accounts []Account, err error) {
-	err = db.DB.Debug().Table(s.TableName()).Find(&accounts).Error
+	err = db.DB.Debug().Table(s.TableName()).Select([]string{"id", "en_name", "cn_name", "platform", "access_key_id", "root_id"}).Find(&accounts).Error
 	return
 }
 
