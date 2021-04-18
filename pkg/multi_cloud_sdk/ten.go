@@ -73,7 +73,7 @@ func (ten *tencentcloudClient) CreateInstance(instanceChargeType, hostname, inst
 	request.HostName = common.StringPtr(hostname)
 	request.ImageId = common.StringPtr(imageId)
 	request.SecurityGroupIds = common.StringPtrs(securityGroupIds)
-	request.SystemDisk = &cvm.SystemDisk {
+	request.SystemDisk = &cvm.SystemDisk{
 		DiskType: common.StringPtr("CLOUD_PREMIUM"),
 		DiskSize: common.Int64Ptr(100),
 	}
@@ -215,7 +215,7 @@ func (ten *tencentcloudClient) ListInstances() ([]map[string]interface{}, error)
 	var instanceArray []map[string]interface{}
 	for pageNumber := 0; pageNumber <= 3; pageNumber++ {
 		request := cvm.NewDescribeInstancesRequest()
-		request.Offset = common.Int64Ptr(int64(pageNumber)*100)
+		request.Offset = common.Int64Ptr(int64(pageNumber) * 100)
 		request.Limit = common.Int64Ptr(100)
 		response, err := ten.cvmClt.DescribeInstances(request)
 		if err != nil {
@@ -237,6 +237,11 @@ func (ten *tencentcloudClient) ListInstances() ([]map[string]interface{}, error)
 }
 
 func (ten *tencentcloudClient) processInstance(instance *cvm.Instance) (map[string]interface{}, error) {
+	var (
+		publicIP string
+		instanceChargeType string
+		disks              = []map[string]interface{}{}
+	)
 	info := make(map[string]interface{})
 	defer func() {
 		if err := recover(); err != nil {
@@ -245,13 +250,37 @@ func (ten *tencentcloudClient) processInstance(instance *cvm.Instance) (map[stri
 	}()
 
 	tools.PrettyPrint(instance)
+	if *instance.InstanceChargeType == "PREPAID" {
+		instanceChargeType = "PrePaid"
+	} else {
+		instanceChargeType = "PostPaid"
+	}
+
+	// system and data disk
+	tmpSystemDisk := make(map[string]interface{})
+	tmpSystemDisk["disk_id"] = instance.SystemDisk.DiskId
+	tmpSystemDisk["disk_type"] = instance.SystemDisk.DiskType
+	tmpSystemDisk["disk_size"] = instance.SystemDisk.DiskSize
+	disks = append(disks, tmpSystemDisk)
+	for _, disk := range instance.DataDisks {
+		tmpDataDisk := make(map[string]interface{})
+		tmpDataDisk["disk_id"] = disk.DiskId
+		tmpDataDisk["disk_type"] = disk.DiskType
+		tmpDataDisk["disk_size"] = disk.DiskSize
+		disks = append(disks, tmpDataDisk)
+	}
+
+	// publicIp
+	if len(instance.PublicIpAddresses) == 1 {
+		publicIP = *instance.PublicIpAddresses[0]
+	}
 	info = map[string]interface{}{
 		"type":                 cloudType,
 		"platform":             "ten",
-		"instance_charge_type": instance.InstanceChargeType,
+		"instance_charge_type": instanceChargeType,
 		"instance_id":          instance.InstanceId,
 		"private_ip":           instance.PrivateIpAddresses[0],
-		"public_ip":            instance.PublicIpAddresses,
+		"public_ip":            publicIP,
 		"eip_ip":               "",
 		"instance_name":        instance.InstanceName,
 		"hostname":             instance.InstanceName,
@@ -267,6 +296,7 @@ func (ten *tencentcloudClient) processInstance(instance *cvm.Instance) (map[stri
 		"state":                strings.ToLower(*instance.InstanceState),
 		"mem_total":            *instance.Memory,
 		"cpu_total":            instance.CPU,
+		"disks":                disks,
 		"start_time":           "",
 		"create_time":          tools.ReplaceDateTime(*instance.CreatedTime),
 		"expired_time":         tools.ReplaceDateTime(*instance.ExpiredTime),

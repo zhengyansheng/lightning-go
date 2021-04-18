@@ -11,7 +11,6 @@ import (
 type CloudTemplate struct {
 	gorm.Model
 	AppKey           string      `json:"app_key" binding:"required"`            // 关联到service_tree服务
-	Env              string      `json:"env"`                                   // 环境 如果绑在非环境节点时
 	Account          string      `json:"account" binding:"required"`            // 帐号
 	PayType          string      `json:"pay_type"`                              // 支付方式 包年和按月
 	RegionId         string      `json:"region_id" binding:"required"`          // 地域
@@ -58,9 +57,6 @@ func (s *CloudTemplate) ListByAppKey() (templates []CloudTemplate, err error) {
 
 	if s.Account != "" {
 		table = table.Where("account = ?", s.Account)
-	}
-	if s.Env != "" {
-		table = table.Where("env = ?", s.Env)
 	}
 	if s.RegionId != "" {
 		table = table.Where("region_id = ?", s.RegionId)

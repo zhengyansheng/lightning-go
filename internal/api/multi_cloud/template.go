@@ -57,10 +57,6 @@ func CetTemplateByAppKeyView(c *gin.Context) {
 		template.RegionId = v
 	}
 
-	if v, ok := c.GetQuery("env"); ok {
-		template.Env = v
-	}
-
 	// 格式化打印验证的数据
 	tools.PrettyPrint(template)
 
