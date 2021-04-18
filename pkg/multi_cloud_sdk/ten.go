@@ -255,7 +255,7 @@ func (ten *tencentcloudClient) processInstance(instance *cvm.Instance) (map[stri
 	} else {
 		// POSTPAID_BY_HOUR
 		instanceChargeType = "PostPaid"
-		expiredTime = "0000-00-00"
+		expiredTime = "0000-00-00 00:00:00"
 	}
 	// system and data disk
 	disks := []map[string]interface{}{}
@@ -302,7 +302,7 @@ func (ten *tencentcloudClient) processInstance(instance *cvm.Instance) (map[stri
 		"mem_total":            *instance.Memory,
 		"cpu_total":            instance.CPU,
 		"disks":                disks,
-		"start_time":           "",
+		"start_time":           "0000-00-00 00:00:00",
 		"create_server_time": tools.ReplaceDateTime(*instance.CreatedTime),
 		"expired_time":       expiredTime,
 	}, nil
