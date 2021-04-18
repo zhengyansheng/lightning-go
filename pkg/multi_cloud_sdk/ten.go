@@ -282,7 +282,7 @@ func (ten *tencentcloudClient) processInstance(instance *cvm.Instance) (map[stri
 		"private_ip":           instance.PrivateIpAddresses[0],
 		"public_ip":            publicIP,
 		"eip_ip":               "",
-		"instance_name":        instance.InstanceName,
+		//"instance_name":        instance.InstanceName,
 		"hostname":             instance.InstanceName,
 		"image_id":             instance.ImageId,
 		"os_system":            strings.Fields(*instance.OsName)[0],

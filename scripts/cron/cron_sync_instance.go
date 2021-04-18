@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	multiCloudHost = "http://127.0.0.1:9900"
+	multiCloudHost = "http://go-ops.aiops724.com"
 	opsHost        = "http://ops.aiops724.com"
 	regionUri      = "/api/v1/multi-cloud/regions/"
 	instanceUri    = "/api/v1/multi-cloud/instance/"
@@ -90,6 +90,22 @@ func postCmdb(instances map[string]interface{}) (string, error) {
 	return "", nil
 }
 
+func postMultiCmdb(instances []map[string]interface{}) (string, error) {
+	url := fmt.Sprintf("%s%s", opsHost, cmdbUri)
+	fmt.Printf("url:%s\n", url)
+	headers := make(map[string]string)
+	headers["Content-Type"] = "application/json"
+	dataByte, err := json.Marshal(instances)
+	if err != nil {
+		return "json.Marshal err", err
+	}
+	dataByte, err = request.Post(dataByte, headers, url, time.Duration(time.Second*10))
+	if err != nil {
+		return string(dataByte), err
+	}
+	return "", nil
+}
+
 func updateCmdb(instances []map[string]interface{}) (string, error) {
 	url := fmt.Sprintf("%s%s", opsHost, cmdbUpdateUri)
 	fmt.Printf("url:%s\n", url)
@@ -131,21 +147,34 @@ func main() {
 					return
 				}
 				fmt.Printf("account: %s region_id: %s instances length %d.\n", account, regionId, len(instances))
+				var dataList []map[string]interface{}
 				for _, instanceInfo := range instances {
 					//3. 同步云主机信息
 					instanceInfo["account"] = account
-					tools.PrettyPrint(instanceInfo)
-					res, err := postCmdb(instanceInfo)
-					if err != nil {
-						fmt.Printf("Post cmdb err: %v, response: %v\n", err, res)
-					}
-					//4. 变更云主机信息到cmdb
-					instanceArr := []map[string]interface{}{}
-					instanceArr = append(instanceArr, instanceInfo)
-					res, err = updateCmdb(instanceArr)
-					if err != nil {
-					}
+					//tools.PrettyPrint(instanceInfo)
+					dataList = append(dataList, instanceInfo)
+					//res, err := postCmdb(instanceInfo)
+					//if err != nil {
+					//	fmt.Printf("Post cmdb err: %v, response: %v\n", err, res)
+					//}
+					////4. 变更云主机信息到cmdb
+					//instanceArr := []map[string]interface{}{}
+					//instanceArr = append(instanceArr, instanceInfo)
+					//res, err = updateCmdb(instanceArr)
+					//if err != nil {
+					//}
 				}
+				tools.PrettyPrint(dataList)
+				////3. 同步云主机信息
+				//res, err := postMultiCmdb(dataList)
+				//if err != nil {
+				//	fmt.Printf("Post cmdb err: %v, response: %v\n", err, res)
+				//}
+				////4. 变更云主机信息到cmdb
+				//res, err = updateCmdb(dataList)
+				//if err != nil {
+				//	fmt.Printf("Update cmdb err: %v, response: %v\n", err, res)
+				//}
 			}(account, info["region_id"])
 		}
 	}
