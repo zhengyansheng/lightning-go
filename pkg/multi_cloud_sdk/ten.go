@@ -239,42 +239,48 @@ func (ten *tencentcloudClient) ListInstances() ([]map[string]interface{}, error)
 func (ten *tencentcloudClient) processInstance(instance *cvm.Instance) (map[string]interface{}, error) {
 	var (
 		publicIP           string
+		expiredTime        string
 		instanceChargeType string
-		disks              = []map[string]interface{}{}
 	)
-	info := make(map[string]interface{})
+
 	defer func() {
 		if err := recover(); err != nil {
 			fmt.Printf("recover %s\n", err)
 		}
 	}()
-
 	tools.PrettyPrint(instance)
 	if *instance.InstanceChargeType == "PREPAID" {
 		instanceChargeType = "PrePaid"
+		expiredTime = tools.ReplaceDateTime(*instance.ExpiredTime)
 	} else {
+		// POSTPAID_BY_HOUR
 		instanceChargeType = "PostPaid"
+		expiredTime = "0000-00-00"
 	}
-
 	// system and data disk
+	disks := []map[string]interface{}{}
 	tmpSystemDisk := make(map[string]interface{})
-	tmpSystemDisk["disk_id"] = instance.SystemDisk.DiskId
-	tmpSystemDisk["disk_type"] = instance.SystemDisk.DiskType
-	tmpSystemDisk["disk_size"] = instance.SystemDisk.DiskSize
+	tmpSystemDisk["disk_id"] = *instance.SystemDisk.DiskId
+	tmpSystemDisk["disk_type"] = *instance.SystemDisk.DiskType
+	tmpSystemDisk["disk_size"] = *instance.SystemDisk.DiskSize
 	disks = append(disks, tmpSystemDisk)
-	for _, disk := range instance.DataDisks {
-		tmpDataDisk := make(map[string]interface{})
-		tmpDataDisk["disk_id"] = disk.DiskId
-		tmpDataDisk["disk_type"] = disk.DiskType
-		tmpDataDisk["disk_size"] = disk.DiskSize
-		disks = append(disks, tmpDataDisk)
+	if len(instance.DataDisks) >= 1 {
+		for _, disk := range instance.DataDisks {
+			tmpDataDisk := make(map[string]interface{})
+			tmpDataDisk["disk_id"] = *disk.DiskId
+			tmpDataDisk["disk_type"] = *disk.DiskType
+			tmpDataDisk["disk_size"] = *disk.DiskSize
+			disks = append(disks, tmpDataDisk)
+		}
 	}
 
-	// publicIp
+	// publicIpx
 	if len(instance.PublicIpAddresses) == 1 {
 		publicIP = *instance.PublicIpAddresses[0]
+	} else {
+		publicIP = ""
 	}
-	info = map[string]interface{}{
+	return map[string]interface{}{
 		"type":                 cloudType,
 		"platform":             "ten",
 		"instance_charge_type": instanceChargeType,
@@ -282,26 +288,24 @@ func (ten *tencentcloudClient) processInstance(instance *cvm.Instance) (map[stri
 		"private_ip":           instance.PrivateIpAddresses[0],
 		"public_ip":            publicIP,
 		"eip_ip":               "",
-		//"instance_name":        instance.InstanceName,
-		"hostname":           instance.InstanceName,
-		"image_id":           instance.ImageId,
-		"os_system":          strings.Fields(*instance.OsName)[0],
-		"os_version":         instance.OsName,
-		"instance_type":      instance.InstanceType,
-		"region_id":          ten.regionId,
-		"zone_id":            instance.Placement.Zone,
-		"vpc_id":             instance.VirtualPrivateCloud.VpcId,
-		"subnet_id":          instance.VirtualPrivateCloud.SubnetId,
-		"security_group_ids": instance.SecurityGroupIds,
-		"state":              strings.ToLower(*instance.InstanceState),
-		"mem_total":          *instance.Memory,
-		"cpu_total":          instance.CPU,
-		"disks":              disks,
-		"start_time":         "",
+		"hostname":             instance.InstanceName,
+		"image_id":             instance.ImageId,
+		"os_system":            strings.Fields(*instance.OsName)[0],
+		"os_version":           instance.OsName,
+		"instance_type":        instance.InstanceType,
+		"region_id":            ten.regionId,
+		"zone_id":              instance.Placement.Zone,
+		"vpc_id":               instance.VirtualPrivateCloud.VpcId,
+		"subnet_id":            instance.VirtualPrivateCloud.SubnetId,
+		"security_group_ids":   instance.SecurityGroupIds,
+		"state":                strings.ToLower(*instance.InstanceState),
+		"mem_total":            *instance.Memory,
+		"cpu_total":            instance.CPU,
+		"disks":                disks,
+		"start_time":           "",
 		"create_server_time": tools.ReplaceDateTime(*instance.CreatedTime),
-		"expired_time":       tools.ReplaceDateTime(*instance.ExpiredTime),
-	}
-	return info, nil
+		"expired_time":       expiredTime,
+	}, nil
 }
 
 func (ten *tencentcloudClient) ListRegions() (regions []map[string]string, err error) {

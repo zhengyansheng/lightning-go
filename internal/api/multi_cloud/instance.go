@@ -154,8 +154,8 @@ func ListInstancesView(c *gin.Context) {
 func InstanceDetailView(c *gin.Context) {
 	// Validate field
 	s := struct {
-		Account  string `form:"account" binding:"required"`
-		RegionId string `form:"region_id" binding:"required"`
+		Account    string `form:"account" binding:"required"`
+		RegionId   string `form:"region_id" binding:"required"`
 	}{}
 	if err := c.ShouldBind(&s); err != nil {
 		tools.JSONFailed(c, tools.MSG_ERR, err.Error())

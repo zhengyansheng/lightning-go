@@ -50,7 +50,7 @@ func InitRouters(server *xgin.Server) {
 		instance.POST("/reboot", middleware.LifeCycle(), multi_cloud.RebootInstanceView)
 		instance.POST("/modify_instance_name", middleware.LifeCycle(), multi_cloud.ModifyInstanceNameView)
 		instance.GET("/", multi_cloud.ListInstancesView)
-		instance.GET("/:id", multi_cloud.InstanceDetailView)
+		instance.GET("/:instance_id", multi_cloud.InstanceDetailView)
 		instance.POST("/destroy", middleware.LifeCycle(), multi_cloud.DestroyInstanceView)
 	}
 	cycle := server.Group("/api/v1/multi-cloud/life_cycle")
