@@ -149,32 +149,20 @@ func main() {
 				fmt.Printf("account: %s region_id: %s instances length %d.\n", account, regionId, len(instances))
 				var dataList []map[string]interface{}
 				for _, instanceInfo := range instances {
-					//3. 同步云主机信息
 					instanceInfo["account"] = account
-					//tools.PrettyPrint(instanceInfo)
 					dataList = append(dataList, instanceInfo)
-					//res, err := postCmdb(instanceInfo)
-					//if err != nil {
-					//	fmt.Printf("Post cmdb err: %v, response: %v\n", err, res)
-					//}
-					////4. 变更云主机信息到cmdb
-					//instanceArr := []map[string]interface{}{}
-					//instanceArr = append(instanceArr, instanceInfo)
-					//res, err = updateCmdb(instanceArr)
-					//if err != nil {
-					//}
 				}
 				tools.PrettyPrint(dataList)
-				////3. 同步云主机信息
-				//res, err := postMultiCmdb(dataList)
-				//if err != nil {
-				//	fmt.Printf("Post cmdb err: %v, response: %v\n", err, res)
-				//}
-				////4. 变更云主机信息到cmdb
-				//res, err = updateCmdb(dataList)
-				//if err != nil {
-				//	fmt.Printf("Update cmdb err: %v, response: %v\n", err, res)
-				//}
+				//3. 同步云主机信息
+				res, err := postMultiCmdb(dataList)
+				if err != nil {
+					fmt.Printf("Post cmdb err: %v, response: %v\n", err, res)
+				}
+				//4. 变更云主机信息到cmdb
+				res, err = updateCmdb(dataList)
+				if err != nil {
+					fmt.Printf("Update cmdb err: %v, response: %v\n", err, res)
+				}
 			}(account, info["region_id"])
 		}
 	}
